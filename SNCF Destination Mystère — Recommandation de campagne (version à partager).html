@@ -1,0 +1,2413 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SNCF Destination Mystère — Recommandation de campagne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;700;800&family=Martian+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE : un dossier de recommandation d'agence, sérieux et lisible.
+   IDEA : le tableau des départs d'une gare, dont la destination reste « ? ? ? ».
+   PICTURE : l'en-tête est un tableau des départs ; la destination défile puis s'arrête sur le mystère.
+   COLOUR and TYPE : bleu nuit des afficheurs, ambre des lettres, carmin pour l'accent ; Schibsted Grotesk.
+   LAYOUT : sommaire collant à gauche sur grand écran, texte en colonne calme, tableaux réglés. */
+:root{color-scheme:light dark;--bg:light-dark(#f6f4f0,#111318);--panel:light-dark(#ffffff,#191c23);--ink:light-dark(#16181d,#eceae5);--mute:light-dark(#5b5f68,#a3a6ad);--line:light-dark(#dcd8d0,#2c3039);--board:#0d1b33;--amber:#ffc531;--red:light-dark(#c8102e,#ff5a6e)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:24px;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.6 "Schibsted Grotesk",system-ui,sans-serif;overflow-x:clip}
+a{color:var(--red)}
+.board{background:var(--board);color:#fff;padding:clamp(28px,5vw,60px) max(5vw,16px)}
+.board .wrap{max-width:1240px;margin:auto;display:grid;gap:28px;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:center}
+.board h1{font-size:clamp(30px,4.4vw,50px);line-height:1.05;margin:0 0 12px;text-wrap:balance;font-weight:800}
+.board p{margin:0;color:#c9d3e6;max-width:60ch}
+.statut{margin-top:18px;display:inline-block;background:rgba(255,197,49,.12);border:1px solid rgba(255,197,49,.45);color:var(--amber);padding:8px 12px;border-radius:6px;font-size:14px}
+.dep{background:#071226;border-radius:10px;padding:18px;box-shadow:inset 0 0 0 1px #1f3358,0 18px 40px rgba(0,0,0,.35);font-family:"Martian Mono",monospace;color:var(--amber)}
+.dep .row{display:grid;grid-template-columns:4.2em minmax(0,1fr) 3.2em;gap:10px;padding:10px 0;border-bottom:1px dashed #1f3358;font-size:clamp(12px,1.5vw,15px)}
+.dep .row:last-child{border:0}.dep .hd{color:#7f93b8;font-size:12px}
+.flap{display:inline-block;background:#0f203f;padding:2px 6px;border-radius:3px;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.layout{max-width:1240px;margin:auto;padding:clamp(20px,3vw,40px) max(4vw,16px);display:grid;gap:40px;grid-template-columns:minmax(0,1fr)}
+nav.toc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+nav.toc h2{font-size:15px;margin:0 0 8px;color:var(--mute);font-weight:600}
+nav.toc ol{margin:0;padding-left:1.1em}nav.toc ol ol{padding-left:1em;font-size:14.5px}
+nav.toc li{margin:3px 0}nav.toc a{color:var(--ink);text-decoration:none}nav.toc a:hover,nav.toc a.on{color:var(--red)}
+nav.toc > ol > li > a{font-weight:700}
+@media(min-width:1000px){.layout{grid-template-columns:280px minmax(0,1fr)}nav.toc{position:sticky;top:20px;align-self:start;max-height:calc(100vh - 40px);overflow:auto}}
+main{max-width:900px}
+main h2{font-size:clamp(24px,3vw,32px);line-height:1.15;margin:56px 0 14px;padding-top:18px;border-top:3px solid var(--ink);text-wrap:balance}
+main h2:first-child{margin-top:0}
+main h3{font-size:20px;margin:34px 0 10px}
+main h4{font-size:17px;margin:26px 0 8px;color:var(--red)}
+main p,main li{max-width:72ch}
+.scroll{overflow-x:auto;margin:16px 0 22px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;line-height:1.45}
+th{text-align:left;background:light-dark(#efece6,#20242c);font-weight:700;position:sticky;top:0}
+th,td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top;min-width:9em}
+tr:last-child td{border-bottom:0}
+.tag{display:inline;font-size:12px;font-weight:600;padding:1px 7px;border-radius:999px;line-height:1.9;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.t-v{background:light-dark(#e3f2e6,#16351f);color:light-dark(#1d6b31,#8fdca3)}
+.t-e{background:light-dark(#e7f0fb,#162a44);color:light-dark(#1f5aa6,#9cc3f5)}
+.t-h{background:light-dark(#fbf0d9,#3a2d10);color:light-dark(#8a5a00,#f4c76a)}
+.t-c{background:light-dark(#efedff,#2a2550);color:light-dark(#4b3fb0,#bdb5ff)}
+.t-g{background:light-dark(#f1f1f1,#2a2a2a);color:light-dark(#333,#ddd)}
+.t-p{background:light-dark(#e5f4e4,#16351f);color:light-dark(#0f5a3a,#9fe0bd);outline:1px solid currentColor}
+.t-w{background:light-dark(#fbebeb,#401a1f);color:light-dark(#a3162b,#ff9aa8)}
+aside.retenir{margin:24px 0;padding:16px 20px;border-left:5px solid var(--red);background:var(--panel);border-radius:0 8px 8px 0}
+aside.retenir p{margin:0 0 6px}aside.retenir ul{margin:0;padding-left:1.2em}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+footer{color:var(--mute);font-size:13px;text-align:center;padding:30px 16px 50px}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+@media(max-width:700px){.board .wrap{grid-template-columns:minmax(0,1fr)}th,td{min-width:8em}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.flap{animation:none}}
+</style></head><body><a href="index.html" id="sdm-back" style="position:fixed;top:12px;left:12px;z-index:2147483647;font:600 13px/1 system-ui,sans-serif;color:#f2f5fa;background:rgba(10,20,38,.85);border:1px solid #f6b031;border-radius:999px;padding:8px 12px;text-decoration:none">← Index</a>
+<header class="board"><div class="wrap">
+<div><h1>SNCF Destination Mystère : la recommandation stratégique</h1>
+<p>Challenge Agence, MBA 2 Communication 360°. Campagne de lancement en France, 3 mois, 250 000 € HT. Concept recommandé : « L'Annonce », signé « Vous choisissez quand. On s'occupe du où. »</p>
+<div class="statut">Recommandation de campagne · SNCF Voyageurs · Lison Charneux Bougé, Maxence Delbove, Elisa Urbin, Romain Boniface</div></div>
+<div class="dep" role="img" aria-label="Tableau des départs : la destination du week-end reste mystère">
+<div class="row hd"><span>Heure</span><span>Destination</span><span>Voie</span></div>
+<div class="row"><span>18:42</span><span class="flap" id="d1">MARSEILLE</span><span>B</span></div>
+<div class="row"><span>19:05</span><span class="flap" id="d2">? ? ? ? ? ?</span><span>?</span></div>
+<div class="row"><span>19:17</span><span class="flap">ANNONCE JEUDI</span><span>?</span></div>
+</div></div></header>
+<div class="layout">
+<nav class="toc" aria-label="Sommaire"><h2>Sommaire</h2><ol><li><a href="#cadrage">Cadrage</a></li><li><a href="#partie-1-analyser-la-marque-et-son-contexte-publicitaire">Partie 1 — Analyser la marque et son contexte publicitaire</a><ol><li><a href="#1-1-dispositif-de-veille">1.1 Dispositif de veille</a></li><li><a href="#1-2-la-marque-en-une-page">1.2 La marque en une page</a></li><li><a href="#1-3-analyse-des-campagnes-existantes">1.3 Analyse des campagnes existantes</a></li><li><a href="#1-4-contexte-externe">1.4 Contexte externe</a></li><li><a href="#1-5-swot-du-lancement-et-tows">1.5 SWOT du lancement et TOWS</a></li><li><a href="#1-6-probleme-publicitaire">1.6 Problème publicitaire</a></li></ol></li><li><a href="#partie-2-comprendre-la-cible-et-identifier-un-insight">Partie 2 — Comprendre la cible et identifier un insight</a><ol><li><a href="#2-1-segmentation">2.1 Segmentation</a></li><li><a href="#2-2-personas-grille-du-cours-en-4-blocs">2.2 Personas (grille du cours en 4 blocs)</a></li><li><a href="#2-3-preuves-terrain">2.3 Preuves terrain</a></li><li><a href="#2-4-insight">2.4 Insight</a></li></ol></li><li><a href="#partie-3-construire-le-parcours-consommateur">Partie 3 — Construire le parcours consommateur</a><ol><li><a href="#3-1-tableau-du-funnel">3.1 Tableau du funnel</a></li><li><a href="#3-2-hierarchie-des-objectifs-l-affectif-en-priorite">3.2 Hiérarchie des objectifs : l&#x27;affectif en priorité</a></li><li><a href="#3-3-points-de-contact">3.3 Points de contact</a></li></ol></li><li><a href="#partie-4-definir-la-strategie-et-le-concept-creatifs">Partie 4 — Définir la stratégie et le concept créatifs</a><ol><li><a href="#4-1-objectif-principal-smart">4.1 Objectif principal (SMART)</a></li><li><a href="#4-2-les-4-questions-de-la-strategie-creative">4.2 Les 4 questions de la stratégie créative</a></li><li><a href="#4-3-approche-publicitaire">4.3 Approche publicitaire</a></li><li><a href="#4-4-copy-strategy-en-6-rubriques-modele-ariel">4.4 Copy Strategy en 6 rubriques (modèle Ariel)</a></li><li><a href="#4-5-disruption-et-rupture-avec-les-habitudes-sncf">4.5 Disruption et rupture avec les habitudes SNCF</a></li><li><a href="#4-6-concepts-creatifs">4.6 Concepts créatifs</a></li><li><a href="#4-7-territoire-creatif-du-concept-retenu-grille-oasis">4.7 Territoire créatif du concept retenu (grille Oasis)</a></li><li><a href="#4-8-recommandation-des-supports-des-trois-publicites">4.8 Recommandation des supports des trois publicités</a></li></ol></li><li><a href="#partie-5-realiser-trois-publicites">Partie 5 — Réaliser trois publicités</a><ol><li><a href="#5-1-fiches-de-justification">5.1 Fiches de justification</a></li><li><a href="#5-2-contenu-creatif-detaille">5.2 Contenu créatif détaillé</a></li><li><a href="#5-3-briefs-de-production-pour-notre-equipe">5.3 Briefs de production pour notre équipe</a></li><li><a href="#5-4-planche-de-campagne-une-seule-campagne-en-trois-temps">5.4 Planche de campagne : une seule campagne en trois temps</a></li><li><a href="#5-5-check-list-de-conformite">5.5 Check-list de conformité</a></li></ol></li><li><a href="#partie-6-planifier-et-diffuser-la-campagne">Partie 6 — Planifier et diffuser la campagne</a><ol><li><a href="#6-1-choix-des-canaux-5-questions-du-cours">6.1 Choix des canaux (5 questions du cours)</a></li><li><a href="#6-2-role-de-chaque-canal">6.2 Rôle de chaque canal</a></li><li><a href="#6-3-ciblages">6.3 Ciblages</a></li><li><a href="#6-4-sequencage-des-messages-cf-adidas-nemeziz">6.4 Séquençage des messages (cf. Adidas Nemeziz)</a></li><li><a href="#6-5-ecosysteme">6.5 Écosystème</a></li><li><a href="#6-6-planning">6.6 Planning</a></li><li><a href="#6-7-budget-250-000-ht">6.7 Budget : 250 000 € HT</a></li></ol></li><li><a href="#partie-7-mesurer-et-optimiser-la-campagne">Partie 7 — Mesurer et optimiser la campagne</a><ol><li><a href="#7-1-kpi">7.1 KPI</a></li><li><a href="#7-2-evaluation">7.2 Évaluation</a></li><li><a href="#7-3-optimisation">7.3 Optimisation</a></li></ol></li><li><a href="#annexe-ou-le-cours-est-applique">Annexe — Où le cours est appliqué</a></li><li><a href="#sources">Sources</a></li></ol>
+<div class="legend"><span class="tag t-c">Cours</span><span class="tag t-g">Consigne</span></div></nav>
+<main><h2 id="cadrage">Cadrage</h2>
+<p><strong>Recommandation en une phrase : ne jamais montrer la destination.</strong> SNCF détourne ses propres codes d'information voyageurs (tableau des départs, jingle) pour annoncer… une destination masquée. La preuve vient des vraies révélations filmées par les premiers voyageurs (UGC), diffusées en espace payant : ne plus avoir à choisir devient un soulagement plutôt qu'un risque.</p>
+<p><strong>Brief client <span class="tag t-c">Cours</span></strong> : SNCF Voyageurs lance <em>SNCF Destination Mystère</em>, des week-ends en train à prix fixe (trajet + hébergement). Le voyageur choisit dates, budget et préférences ; il découvre la destination quelques jours avant le départ. Objectif : susciter l'envie et générer les premières réservations, sans communiquer principalement sur les destinations, les prix ou la performance du transport.</p>
+<p><strong>Contraintes <span class="tag t-g">Consigne</span></strong> : lancement en France sur 3 mois · budget total 250 000 € HT (création, production, diffusion, pilotage) · un concept commun aux 3 publicités · au moins 2 formats différents · un message par étape du funnel · se distinguer des habitudes publicitaires de la marque en respectant son identité.</p>
+<p><strong>Lecture du brief <span class="tag t-c">Cours</span></strong> : un week-end à prix fixe est un achat engageant (budget, temps libre, part de risque). Le cours l'oppose à l'achat impulsif (Temu / Shein) : il faut investir dans le cognitif et l'affectif avant de vendre. Le défi ferme les deux approches classiques du secteur (raison sur la performance, conatif sur le prix) : la stratégie passe par l'imaginaire de marque et les aspirations.</p>
+<p><strong>Références</strong> : <span class="tag t-c">Cours</span> renvoie au cours « Stratégies publicitaires », <span class="tag t-g">Consigne</span> au cahier des charges du Challenge Agence. Données arrêtées au 21 novembre 2026.</p>
+<h2 id="partie-1-analyser-la-marque-et-son-contexte-publicitaire">Partie 1 — Analyser la marque et son contexte publicitaire</h2>
+<p><strong>Question de la consigne</strong> : histoire, positionnement, valeurs, cibles ; campagnes existantes ; problème publicitaire. <strong>Outils du cours</strong> : diagnostic interne (« la publicité doit être le prolongement logique de ce qu'est la marque »), grille d'analyse d'une stratégie publicitaire, PESTEL, benchmark, part de voix, SWOT.</p>
+<p><strong>Conclusion de la partie</strong> : SNCF a tout pour vendre la surprise (un réseau en France et vers 6 pays voisins, une appli dans la poche d'un Français sur quatre, les gares comme média) mais sa publicité dit toujours <strong>où</strong> et <strong>combien</strong> : c'est précisément l'habitude à casser.</p>
+<h3 id="1-1-dispositif-de-veille">1.1 Dispositif de veille</h3>
+<ul>
+<li><strong>Pige</strong> : Kantar Media (investissements SNCF / concurrents), Meta Ad Library, TikTok Creative Center, Google Ads Transparency Center.</li>
+<li><strong>Social listening</strong> : Talkwalker ou Visibrain sur #voyagesurprise, #mysterytrip, « week-end en train », « SNCF » + sentiment.</li>
+<li><strong>Tendances</strong> : Atout France, Booking.com Travel Predictions, Skyscanner, baromètres Ipsos / YouGov.</li>
+<li><strong>Verbatims</strong> (matière de la partie 2) : avis Trustpilot des offres surprise, commentaires TikTok / Instagram sous les vidéos de révélation, Reddit (r/france, r/voyage).</li>
+</ul>
+<h3 id="1-2-la-marque-en-une-page">1.2 La marque en une page</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Angle</th>
+<th>Ce qu'il faut retenir pour la campagne</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Histoire</td>
+<td>SNCF Voyageurs est la filiale voyageurs du groupe depuis 2020 ; elle fête ses 5 ans en 2025 et juge sa notoriété « à consolider » (<a href="https://www.cbnews.fr/node/91061">CB News</a>).</td>
+</tr>
+<tr>
+<td>Taille</td>
+<td>~5 millions de voyageurs par jour ; 15 000 trains/jour et 2 500 destinations selon l'agence (<a href="https://www.cbnews.fr/node/75661">CB News</a>). Record TGV : 168 M de passagers en 2025, +3,5 % sur un an, +18 % vs 2019 (<a href="https://www.deplacementspros.com/transport/sncf-voyageurs-revendique-un-record-de-frequentation-en-2025-sur-les-lignes-a-grande-vitesse">DéplacementsPros</a>). 230 destinations grande vitesse en France et en Europe, Eurostar compris (<a href="https://www.sncf-voyageurs.com/fr/voyagez-avec-nous/en-france/tgv-inoui/nos-destinations-tgv-inoui/">SNCF Voyageurs</a>).</td>
+</tr>
+<tr>
+<td>Positionnement</td>
+<td>Le train comme espace de liberté : première campagne de marque « Born to be wild », Rosa Paris, mars 2023 (<a href="https://lareclame.fr/rosaparis/realisations/born-to-be-wild">La Réclame</a>). Concurrents : voiture, avion low-cost, car (FlixBus, BlaBlaCar), Trenitalia France.</td>
+</tr>
+<tr>
+<td>Valeurs et ton</td>
+<td>Liberté, accessibilité, collectif, mobilité durable ; ton chaleureux (SNCF Connect) ou connivent et drôle (OUIGO).</td>
+</tr>
+<tr>
+<td>Codes</td>
+<td>Logo SNCF et son dégradé, signalétique des gares, tableau des départs, voix d'annonce, jingle sonore en 4 notes (à vérifier dans la charte officielle).</td>
+</tr>
+<tr>
+<td>Cibles actuelles</td>
+<td>Tout public, avec des temps forts dédiés : 18-28 ans (« Choisis ton numéro 10 », 2026), familles (OUIGO billet enfant 8 €), seniors (TGV INOUI).</td>
+</tr>
+<tr>
+<td>Architecture</td>
+<td>SNCF Voyageurs → TGV INOUI, OUIGO, TER, Intercités, Transilien, TGV Lyria ; distribution SNCF Connect (2/3 des ventes de SNCF Voyageurs, <a href="https://www.lechotouristique.com/article/lagence-sncf-connect-represente-les-deux-tiers-des-ventes-de-sncf-voyageurs-25-ans-apres-sa-genese">L'Écho touristique</a>).</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Où placer Destination Mystère ?</strong> Recommandation : une <strong>offre signée SNCF</strong>, vendue en exclusivité sur SNCF Connect, sans nouvelle marque fille. Pourquoi ce choix ? Le frein principal est la confiance (on paie sans savoir où) : la caution du nom SNCF vaut garantie. Le transporteur (INOUI, OUIGO, TER) fait partie de la surprise, donc l'offre doit être au-dessus d'eux. Enfin SNCF Connect vend déjà des nuits d'hôtel depuis 2024 (<a href="https://www.journaldugeek.com/2025/03/18/sncf-connect-veut-remplacer-google-maps-avec-ces-3-nouvelles-fonctionnalites/">Journal du Geek</a>). SNCF Connect, agence de voyages, porte le forfait au sens du Code du tourisme.</p>
+<p><strong>Périmètre de l'offre</strong> : uniquement les destinations desservies par le réseau SNCF. En France : TGV INOUI, OUIGO, Intercités, TER. À l'étranger : TGV INOUI vers l'Espagne, l'Italie, le Luxembourg, Bruxelles et Fribourg-en-Brisgau, TGV Lyria vers la Suisse (<a href="https://www.sncf-voyageurs.com/fr/voyagez-avec-nous/en-france/actualites/planifiez-vos-vacances-dete-2026-des-maintenant/">SNCF Voyageurs</a>), et l'Allemagne par les trains opérés en coopération avec la DB (<a href="https://www.sncf-voyageurs.com/fr/voyagez-avec-nous/en-europe/">SNCF Voyageurs</a>). Eurostar (Londres) est exclu : c'est une société distincte. Le voyageur peut écarter des lieux et choisir « France seulement » ou « France + Europe ».</p>
+<p><strong>Actifs propres pour le lancement</strong> :</p>
+<ul>
+<li><strong>SNCF Connect</strong> : 233 M de billets vendus et 17,2 M de clients actifs en 2025, 10 M de visiteurs uniques par mois, une régie média intégrée (<a href="https://www.sncf-connect.com/outils/regie-publicitaire">SNCF Connect régie</a>). Avec le RGPD et la fin des cookies tiers, cette donnée first-party est un avantage décisif <span class="tag t-c">Cours</span>.</li>
+<li><strong>Personnalisation prouvée</strong> : « Ma Rétrainspective 2025 » a recomposé l'année de 10 M d'utilisateurs en portraits de voyageurs (<a href="https://clubic.com//actualite-590296-le-train-plutot-que-la-voiture-decouvrez-la-retro-2025-de-la-sncf-qui-calcule-l-impact-de-vos-voyages.html">Clubic</a>).</li>
+<li><strong>Gares</strong> : environ 10 M de voyageurs par jour, tous transporteurs confondus (<a href="https://www.garesetconnexions.sncf/fr/retail/retail-brand-event">Gares &amp; Connexions</a>) ; régie Mediatransports, ~4 500 écrans et 7 minutes passées en moyenne près des écrans (<a href="https://jai-un-pote-dans-la.com/hors-cadre-2-affichage-a-activation-digitale-avec-mediatransports/">J'ai un pote dans la com</a>). Ces écrans sont de l'espace payant (voir 4.8).</li>
+</ul>
+<h3 id="1-3-analyse-des-campagnes-existantes">1.3 Analyse des campagnes existantes</h3>
+<p>Grille du cours (6 questions), appliquée à 5 prises de parole récentes.</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Campagne</th>
+<th>Problème traité</th>
+<th>Perception construite</th>
+<th>Insight / tension</th>
+<th>Promesse</th>
+<th>Discours</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SNCF Voyageurs « Born to be wild » (Rosa Paris, mars 2023, TV/ciné)</td>
+<td>Faire émerger la marque SNCF Voyageurs</td>
+<td>Le train = liberté, modernité</td>
+<td>Envie d'escapade sans contrainte</td>
+<td>La liberté, c'est le train</td>
+<td>Identitaire</td>
+</tr>
+<tr>
+<td>SNCF Connect « Retrouvez-vous » (Rosa Paris, 2023 puis 2025)</td>
+<td>Être plus qu'un vendeur de billets (<a href="https://lareclame.fr/rosaparis-bilan-sncf-connect-davidnedzela-292915">La Réclame</a>)</td>
+<td>Une appli qui déclenche des émotions</td>
+<td>Besoin de quitter son quotidien pour se retrouver</td>
+<td>Un clic peut changer une vie</td>
+<td>Identitaire, film musical long</td>
+</tr>
+<tr>
+<td>SNCF Voyageurs « 25 logos, 1 marque » (Rosa Paris, janv. 2025)</td>
+<td>Notoriété de SNCF Voyageurs à consolider</td>
+<td>Une marque qui « bouge les lignes »</td>
+<td>Fierté du collectif (5 M de voyageurs)</td>
+<td>Faire bouger tout le monde</td>
+<td>Identitaire, rupture graphique</td>
+</tr>
+<tr>
+<td>TGV INOUI « À grande vitesse » (Rosa Paris, fév.-mars 2026)</td>
+<td>Notoriété des destinations européennes (<a href="https://jai-un-pote-dans-la.com/tgv-inoui-rosa-paris-vitesse-campagne-destinations-europeennes/">J'ai un pote dans la com</a>)</td>
+<td>Europe accessible</td>
+<td>Désir d'ailleurs</td>
+<td>Les destinations, vues à 320 km/h</td>
+<td>Produit : destination + vitesse</td>
+</tr>
+<tr>
+<td>OUIGO « Concession » (Rosa Paris, oct. 2025, TV)</td>
+<td>Nouvelle offre, nouvelles lignes</td>
+<td>Low-cost devenu qualitatif</td>
+<td>A priori sur le low-cost</td>
+<td>320 km/h, dès 19 €, 70 villes (<a href="https://lareclame.fr/rosaparis/realisations/concession">La Réclame</a>)</td>
+<td>Produit, humour</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Habitudes publicitaires de SNCF → à conserver ou à casser</strong></p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Code récurrent</th>
+<th>Exemple</th>
+<th>Décision</th>
+<th>Pourquoi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Montrer la destination</td>
+<td>TGV INOUI Europe, OUIGO Côte basque</td>
+<td><strong>Casser</strong></td>
+<td>Le brief l'interdit ; le produit la cache</td>
+</tr>
+<tr>
+<td>Afficher un prix d'appel ou la vitesse</td>
+<td>« dès 19 € », « 320 km/h »</td>
+<td><strong>Casser</strong></td>
+<td>Le brief l'interdit ; achat engageant, pas impulsif</td>
+</tr>
+<tr>
+<td>Film émotionnel long porté par la musique, en TV</td>
+<td>« Retrouvez-vous »</td>
+<td><strong>Casser</strong></td>
+<td>Hors budget ; codes déjà vus</td>
+</tr>
+<tr>
+<td>Acteurs, égéries, réalisateurs de cinéma</td>
+<td>« Retrouvez-vous », TGV INOUI</td>
+<td><strong>Casser</strong></td>
+<td>Remplacés par de vrais voyageurs (UGC) : la preuve est plus crédible</td>
+</tr>
+<tr>
+<td>Connivence avec le public</td>
+<td>OUIGO × Le Gorafi, « Concession »</td>
+<td><strong>Garder, sans autodérision</strong></td>
+<td>La complicité passe par les codes que le public connaît ; se moquer du service rappellerait les retards</td>
+</tr>
+<tr>
+<td>Codes de l'univers ferroviaire (gare, quai, bord)</td>
+<td>TGV INOUI 2023</td>
+<td><strong>Garder et détourner</strong></td>
+<td>Reconnaissance « en 2 secondes »</td>
+</tr>
+<tr>
+<td>Logo, couleurs, jingle</td>
+<td>Toutes</td>
+<td><strong>Garder</strong></td>
+<td>Identité non négociable</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Saga ou virage ?</strong> Un <strong>virage dans le registre</strong> (on ne montre plus où l'on va) mais une <strong>continuité de valeurs</strong> (la liberté de « Born to be wild »). C'est l'inverse de Décathlon, qui changeait de positionnement : ici, on change de manière de parler.</p>
+<h3 id="1-4-contexte-externe">1.4 Contexte externe</h3>
+<p><strong>PESTEL (condensé)</strong></p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Fait</th>
+<th>Implication pour la campagne</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Politique</td>
+<td>Politique de report modal vers le rail ; la SNBC 3 vise +50 % de trafic ferroviaire d'ici 2040 (<a href="https://lareclame.fr/rosa-paris-ouigo-beachvertising-325970">La Réclame</a>)</td>
+<td>Contexte porteur, sans en faire un argument</td>
+</tr>
+<tr>
+<td>Économique</td>
+<td>Le budget total reste le 1er critère de choix d'une destination (33 %, <a href="https://yougov.com/fr-fr/articles/55088-voyages-comment-la-geopolitique-redessine-les-choix-des-francais">YouGov</a>) ; 42 % de ceux qui écartent le train invoquent le prix (<a href="https://www.economiematin.fr/?p=226430">Économie Matin</a>, 2026)</td>
+<td>Le prix fixe tout compris rassure : il doit être visible en BOFU, jamais en accroche</td>
+</tr>
+<tr>
+<td>Social</td>
+<td>Booking.com repère pour 2027 le « plot twist trip » et le choix de destination selon l'humeur (<a href="https://fr.euronews.com/2026/10/15/voyages-surprise-pourquoi-sortir-du-script-est-le-summum-du-voyage-selon-bookingcom">Euronews</a>)</td>
+<td>La surprise est une attente culturelle, pas une lubie</td>
+</tr>
+<tr>
+<td>Technologique</td>
+<td>34 % des voyageurs français ont déjà utilisé l'IA pour préparer un voyage, 57 % des 25-34 ans (<a href="https://yougov.com/fr-fr/rapports/55953-ia-et-voyage-2026-france">YouGov</a>) ; DOOH déclenchable en temps réel sur les trains (Train Live Triggering, <a href="https://fr.themedialeader.com/?p=110989">The Media Leader</a>)</td>
+<td>Personnalisation et DOOH contextuel en gare</td>
+</tr>
+<tr>
+<td>Écologique</td>
+<td>Été 2026 caniculaire : 1,9 M de clients TGV éligibles à compensation pour retard (<a href="https://www.tourmag.com/SNCF-l-ete-caniculaire-a-coute-cher-avec-80-M-de-manque-a-gagner_a133490.html">TourMaG</a>)</td>
+<td>Fiabilité = frein à traiter ; aucune allégation verte absolue</td>
+</tr>
+<tr>
+<td>Légal</td>
+<td>Forfait touristique : information précontractuelle obligatoire, pas de droit de rétractation, annulation possible moyennant frais (<a href="https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/voyages-et-sejours-forfait-les-points-verifier">DGCCRF</a>) ; conditions de franchissement des frontières à indiquer ; avis ARPP, publicité trompeuse, loi Climat et Résilience (greenwashing), loi Influenceurs (mention « Publicité ») <span class="tag t-c">Cours</span></td>
+<td>Mentions légales en BOFU, dont « pièce d'identité valide » pour les destinations à l'étranger ; jamais « neutre en carbone » ; pas de faux avis ; UGC authentiques et voyage offert signalé</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Benchmark</strong></p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Acteur</th>
+<th>Concurrence</th>
+<th>Proposition de valeur</th>
+<th>Territoire</th>
+<th>Forces</th>
+<th>Faiblesses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.tourmag.com/Waynabox-propose-des-week-end-surprise-en-Europe_a86993.html">Waynabox</a></td>
+<td>Directe</td>
+<td>Vol + 2 nuits, destination révélée 48 h avant</td>
+<td>Jeu, aventure</td>
+<td>Pionnier ; 4,5/5 sur 2 543 avis Trustpilot (<a href="https://ca.trustpilot.com/review/waynabox.com">Trustpilot</a>)</td>
+<td>Avion, Europe, faible notoriété en France</td>
+</tr>
+<tr>
+<td>Drumwit (via Smartbox)</td>
+<td>Directe</td>
+<td>Voyage surprise 3 jours, 2 personnes, ~375 € (<a href="https://www.laposte.fr/boutique/smartbox-coffret-cadeau-voyage-surprise-avec-drumwit-3-jours-avec-hotel-et-vols-inclus-pour-2-personnes-sejour/p/mp-600415034">La Poste</a>)</td>
+<td>Cadeau</td>
+<td>Distribution en grande surface</td>
+<td>Avion, marque peu connue</td>
+</tr>
+<tr>
+<td>Wizz Air « Let's Get Lost »</td>
+<td>Indirecte (image)</td>
+<td>Vol mystère par concours, avec créateurs</td>
+<td>Buzz, aventure</td>
+<td>Contenus viraux (<a href="https://www.thewomtravel.fr/destinations/actualites-voyage/voyage-surprise-tendance.html">TheWom</a>)</td>
+<td>Pas un produit achetable</td>
+</tr>
+<tr>
+<td>Eurostar « Unexpected Tickets » (DDB Paris, déc. 2025)</td>
+<td>Indirecte (rail ; Eurostar est exclu de notre offre)</td>
+<td>Billets cachés dans des objets, départ le lendemain (<a href="https://www.cbnews.fr/node/97184">CB News</a>)</td>
+<td>Spontanéité</td>
+<td>Premier rail sur ce territoire</td>
+<td>Opération ponctuelle, pas un service</td>
+</tr>
+<tr>
+<td>Trenitalia France</td>
+<td>Directe (rail)</td>
+<td>Confort « Dolce Vita », prix fixes d'appel</td>
+<td>Art de vivre italien (<a href="https://www.cbnews.fr/node/82974">CB News</a>)</td>
+<td>Image premium</td>
+<td>3 lignes seulement</td>
+</tr>
+<tr>
+<td>Smartbox / Wonderbox</td>
+<td>Indirecte (cadeau)</td>
+<td>Coffrets séjours, valables plus de 3 ans</td>
+<td>Faire plaisir</td>
+<td>Leaders du coffret ; Wonderbox réalisait 50 % de son CA à Noël (<a href="https://www.cbnews.fr/marques/wonderbox-ou-extension-du-domaine-du-cadeau">CB News</a>, 2015)</td>
+<td>Pas de transport inclus</td>
+</tr>
+<tr>
+<td>Booking / Airbnb</td>
+<td>Indirecte</td>
+<td>Hébergement à la carte</td>
+<td>Choix infini, inspiration</td>
+<td>Puissance média</td>
+<td>Le choix infini est le problème</td>
+</tr>
+<tr>
+<td>BlaBlaCar / FlixBus</td>
+<td>Indirecte (prix)</td>
+<td>Trajet à bas prix</td>
+<td>Prix, communauté</td>
+<td>Tarifs</td>
+<td>Ni hébergement ni expérience (à vérifier)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Codes du secteur = étape « Convention »</strong> : cartes postales, plans drone, prix en gros, couples souriants, valises au soleil, compte à rebours promo. <strong>Références où la surprise fait désirer</strong> : Eurostar Unexpected Tickets (spontanéité, approche aspirationnelle) ; Wizz Air Let's Get Lost (brand content, cf. Red Bull) ; Kinder Surprise et les « blind boxes » (le plaisir est dans l'ouverture) (rapprochement à documenter) ; Lufthansa Surprise, 2018 (<a href="https://www.parismatch.be/lifestyle/voyages/2018/01/10/lufthansa-propose-desormais-des-billets-davion-vers-une-destination-mystere-OS34HW4A5BCP3GRCXS2YJOSHCE/">Paris Match</a>).</p>
+<p><strong>Part de voix <span class="tag t-c">Cours</span></strong> : Part de voix = investissements de la marque / investissements totaux du marché × 100. ~170 k€ de diffusion sur 3 mois face à un marché voyage-tourisme et transport qui pèse plusieurs centaines de millions d'euros par an : la part de voix sera inférieure à 0,1 %. Chiffre exact à obtenir par la pige Kantar. Conclusion du cours (Burger King face à McDonald's) : on ne gagne pas la bataille du volume. Donc <strong>concentration</strong> (une cible, une période), <strong>originalité</strong> (un concept qui se partage) et <strong>actifs propres</strong> (gares, appli, CRM).</p>
+<h3 id="1-5-swot-du-lancement-et-tows">1.5 SWOT du lancement et TOWS</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th></th>
+<th>Positif</th>
+<th>Négatif</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Interne</strong></td>
+<td><strong>Forces</strong> — (fort) crédibilité et caution SNCF ; (fort) SNCF Connect, 17,2 M de clients actifs, hôtel déjà intégré ; (fort) gares = média et lieu d'attente ; (moyen) un réseau en France et vers 6 pays voisins ; (moyen) codes sonores et visuels connus de tous</td>
+<td><strong>Faiblesses</strong> — (fort) image institutionnelle peu associée à la spontanéité ; (fort) fiabilité perçue (retards, grèves) sur un voyage déjà incertain ; (moyen) train jugé cher ; (moyen) budget média très faible ; (faible) offre nouvelle, sans avis clients</td>
+</tr>
+<tr>
+<td><strong>Externe</strong></td>
+<td><strong>Opportunités</strong> — (fort) tendance « plot twist trip » (Booking 2027) ; (fort) fatigue décisionnelle : 76 % redoutent de mal choisir leur destination (<a href="https://www.tourmag.com/Le-Wanderlost-le-nouveau-phenomene-du-voyage_a125381.html">TourMaG / Skyscanner</a>) ; (moyen) réservation à l'improviste pour 48 % (<a href="https://www.cbnews.fr/node/94277">CB News / WeRoad</a>) ; (moyen) marché du cadeau ; (moyen) révélation = moment de partage UGC</td>
+<td><strong>Menaces</strong> — (fort) déception à la révélation ; (fort) perturbation sur le trajet ; (moyen) imitation par Trenitalia ou les OTA ; (moyen) city trips peu prisés des Français (18 % vs 27 % en Europe, <a href="https://www.ipsos.com/fr-fr/node/1074336">Ipsos 2026</a>) ; (faible) tension réglementaire sur les écrans en gare</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Concurrence</strong> : directe : Drumwit (via Smartbox), Waynabox ; indirecte : Wizz Air « Let's Get Lost », Eurostar « Unexpected Tickets » (détail dans le benchmark, 1.4).</p>
+<p><strong>TOWS → 4 options stratégiques</strong></p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Croisement</th>
+<th>Option</th>
+<th>Retenue pour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SO (attaquer)</td>
+<td>Utiliser la caution SNCF et les gares pour faire de la surprise un rituel national</td>
+<td>Concept et diffusion</td>
+</tr>
+<tr>
+<td>WO (corriger)</td>
+<td>Faire de la surprise la preuve que SNCF sait être spontanée, en détournant ses propres codes</td>
+<td>Disruption (4.5)</td>
+</tr>
+<tr>
+<td>ST (défendre)</td>
+<td>Démontrer le mécanisme et les garanties (préférences, exclusions, prix tout compris) contre la peur de la déception</td>
+<td>MOFU</td>
+</tr>
+<tr>
+<td>WT (éviter)</td>
+<td>Ne jamais promettre la ponctualité ni un bilan carbone</td>
+<td>Conformité</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="1-6-probleme-publicitaire">1.6 Problème publicitaire</h3>
+<ul>
+<li><strong>Obstacle</strong> : choisir sa destination épuise : à force de chercher le week-end parfait, on repousse, on renonce ou on retourne aux mêmes endroits. Et laisser une marque choisir à sa place paraît risqué.</li>
+<li><strong>Opportunité</strong> : une offre qui retire le choix, portée par une marque de confiance, transforme l'incertitude en soulagement.</li>
+<li><strong>Formulation</strong> : <em>Comment faire de l'absence de choix un soulagement plutôt qu'un risque, pour des jeunes actifs que choisir leur destination épuise ?</em></li>
+</ul>
+<p><strong>Transition</strong> : pour lever ce frein, il faut comprendre ce que la cible vit au moment de choisir. C'est l'objet de la partie 2.</p>
+<h2 id="partie-2-comprendre-la-cible-et-identifier-un-insight">Partie 2 — Comprendre la cible et identifier un insight</h2>
+<p><strong>Question de la consigne</strong> : définir la cible prioritaire et justifier l'insight « à partir d'observations ou de données » (grille). <strong>Outils du cours</strong> : cible / cœur de cible / persona, persona publicitaire, 5 pourquoi, contradictions, verbatims, test de l'insight, insight créateur d'usage. <strong>Lien</strong> : le problème (1.6) naît du choix ; il faut trouver la tension vécue qui le rend épuisant.</p>
+<p><strong>Insight retenu</strong> : <em>« J'ai envie de partir, mais choisir où m'épuise avant même d'avoir bougé. À force de chercher le week-end parfait, je finis par ne pas partir, ou par retourner aux mêmes endroits. »</em></p>
+<h3 id="2-1-segmentation">2.1 Segmentation</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Niveau</th>
+<th>Définition</th>
+<th>Justification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cible</td>
+<td>Amateurs de voyages en France, 18-55 ans</td>
+<td>Brief <span class="tag t-c">Cours</span></td>
+</tr>
+<tr>
+<td><strong>Cœur de cible</strong></td>
+<td><strong>Jeunes actifs urbains 25-39 ans, sans enfant, en couple ou entre amis, qui font 3 à 6 week-ends par an et utilisent SNCF Connect, notamment ceux aux horaires décalés pour qui le week-end est rare</strong></td>
+<td>Les 25-34 ans sont les plus ouverts aux nouveaux usages de préparation (57 % ont utilisé l'IA, <a href="https://yougov.com/fr-fr/rapports/55953-ia-et-voyage-2026-france">YouGov 2026</a>) ; budget compatible avec un forfait ; liberté de partir sans enfants ; forte pratique du partage social. On évite les 18-24 ans, déjà adressés par les promos jeunes et plus sensibles au prix.</td>
+</tr>
+<tr>
+<td>Cible secondaire 1</td>
+<td>Acheteurs de cadeaux (couples, amis, familles) : Saint-Valentin, anniversaires</td>
+<td>La surprise est le cœur du marché du coffret (Smartbox, Wonderbox)</td>
+</tr>
+<tr>
+<td>Cible secondaire 2</td>
+<td>Clients SNCF réguliers (cartes Avantage, abonnés CRM)</td>
+<td>Audience chaude, activable en first-party</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-2-personas-grille-du-cours-en-4-blocs">2.2 Personas (grille du cours en 4 blocs)</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Bloc</th>
+<th><strong>Camille, 31 ans</strong> — infirmière, cœur de cible</th>
+<th><strong>Karim, 42 ans</strong> — acheteur de cadeau</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Profil</td>
+<td>Infirmière en horaires décalés dans un CHU à Lyon, en couple, sans enfant, revenus moyens</td>
+<td>Commercial à Lille, en couple depuis 12 ans, deux enfants ados</td>
+</tr>
+<tr>
+<td>2. Affinités et comportements</td>
+<td>3 à 4 week-ends libres par an, connus quand le planning tombe ; retourne souvent aux mêmes villes ; compare 10 onglets avant de réserver ; Instagram, TikTok, podcasts</td>
+<td>Offre un « vrai » cadeau par an ; achète en ligne au dernier moment ; Facebook, YouTube, radio</td>
+</tr>
+<tr>
+<td>3. Intention et contexte</td>
+<td>Cherche « week-end en amoureux pas loin » le soir après une garde ; scrolle en gare ou dans le tram ; écoute des podcasts dans les transports</td>
+<td>Cherche « idée cadeau originale couple » 2 semaines avant la date</td>
+</tr>
+<tr>
+<td>4. Relation avec la marque</td>
+<td>Cliente SNCF Connect, Carte Avantage, présente dans le CRM ; audience de reciblage</td>
+<td>Client occasionnel ; peu engagé avec la marque</td>
+</tr>
+<tr>
+<td>Motivations</td>
+<td>Décrocher vraiment, ne plus rien décider, se faire surprendre</td>
+<td>Marquer le coup, éviter le coffret « déjà vu »</td>
+</tr>
+<tr>
+<td>Freins</td>
+<td>« Et si on tombe sur une ville moche ? », peur du train en retard, prix, dates imposées par le planning</td>
+<td>« Et si ça ne lui plaît pas ? », dates imposées, annulation</td>
+</tr>
+<tr>
+<td>Citation type</td>
+<td>« Toute la journée, je décide pour les autres. Mon week-end, j'aimerais qu'on le décide pour moi. »</td>
+<td>« Je veux offrir un souvenir, pas un objet. »</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-3-preuves-terrain">2.3 Preuves terrain</h3>
+<p><strong>Données publiques</strong> :</p>
+<ul>
+<li><strong>Fatigue de choisir</strong> : 76 % des répondants redoutent de faire le mauvais choix de destination (Skyscanner « Wanderlost », OnePoll, nov. 2024, <a href="https://www.tourmag.com/Le-Wanderlost-le-nouveau-phenomene-du-voyage_a125381.html">TourMaG</a>) ; 30 % ont abandonné un projet en 2024 à force de trop réfléchir (<a href="https://prnewswire.com/news-releases/wanderlost-no-more-skyscanner-reveals-brain-hacks--cheapest-destinations-to-overcome-vacation-planning-anxiety-302363278.html">PR Newswire</a>). Données internationales : à confirmer sur la France par notre terrain.</li>
+<li><strong>Appétit d'imprévu</strong> : 48 % des Français voyagent à l'improviste par réflexe (WeRoad, 657 répondants, <a href="https://www.cbnews.fr/node/94277">CB News</a>) ; Booking.com fait du « plot twist trip » une tendance 2027 (28 000 voyageurs, 32 marchés, <a href="https://www.hospitalitynet.org/news/4134900/bookingcoms-2027-travel-predictions-reveal-the-ultimate-travel-flex-going-off-script">Hospitality Net</a>).</li>
+<li><strong>Besoin de garanties</strong> : 60 % des Français renforcent leurs exigences de garanties face aux incertitudes (<a href="https://yougov.com/fr-fr/articles/55088-voyages-comment-la-geopolitique-redessine-les-choix-des-francais">YouGov</a>).</li>
+</ul>
+<p><strong>Verbatims réels</strong> (sourcés, cités courts) :</p>
+<ul>
+<li>Sur une offre surprise : « the thrill of receiving the email with the surprise destination » (<a href="https://ca.trustpilot.com/review/waynabox.com">Trustpilot Waynabox</a>) → le plaisir est dans l'attente et la révélation.</li>
+<li>Le même fil contient une déception douce : une ville jugée charmante mais pas à son meilleur en août → la saison compte autant que le lieu.</li>
+<li>« J'ai tellement aimé le fait de découvrir ma destination seulement deux jours avant » ; un autre client conseille d'éviter certaines villes (<a href="https://amonavis.fr/tourisme/waynabox-avis">ÀmonAvis</a>) → besoin d'exclure des destinations.</li>
+<li>Sous le vol mystère Wizz Air : « How do you book a hotel if you don't know where you're going? » (<a href="https://www.ladbible.com/lifestyle/travel/wizz-air-mystery-trip-response-hotel-081155-20240311">LADbible</a>) → anxiété logistique, levée par l'hébergement inclus.</li>
+</ul>
+<p><strong>Mini-terrain réalisable en une semaine</strong> :</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Outil</th>
+<th>Mise en œuvre</th>
+<th>Ce qu'on cherche à valider</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Questionnaire (10 questions, Google Forms, objectif 100 réponses 25-39 ans)</td>
+<td>1. Combien de week-ends par an ? 2. Temps passé à choisir ? 3. Déjà renoncé faute de choix ? 4. Retournez-vous aux mêmes endroits ? 5. Partiriez-vous sans connaître la destination ? 6. Ce qui vous ferait peur ? 7. Quelles garanties vous rassureraient ? 8. Budget pour 2 jours à deux ? 9. Offririez-vous ce week-end ? 10. Quel moment vous excite le plus dans un voyage ?</td>
+<td>La fatigue de choisir (Q2-4) et la valeur de l'attente (Q10)</td>
+</tr>
+<tr>
+<td>5 entretiens de 15 minutes</td>
+<td>Raconter le dernier week-end : comment le choix s'est fait</td>
+<td>Le vocabulaire réel de la cible, pour les accroches</td>
+</tr>
+<tr>
+<td>Observation de 200 commentaires TikTok / Instagram sous des vidéos #voyagesurprise</td>
+<td>Codage : envie / peur / question pratique</td>
+<td>La répartition des freins</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-4-insight">2.4 Insight</h3>
+<p><strong>5 pourquoi <span class="tag t-c">Cours</span></strong> : « Je n'ai pas fait de week-end depuis trois mois. » → Pourquoi ? « Je n'arrive pas à choisir où. » → Pourquoi ? « Il y a trop d'options et j'ai peur de me tromper. » → Pourquoi ? « Mes week-ends sont rares, je veux qu'ils soient parfaits. » → Pourquoi ? « Toute la semaine, je prends des décisions, au travail comme à la maison : pour une fois, je voudrais que quelqu'un décide pour moi. » → Résultat : « Alors je ne pars pas, ou je retourne là où je suis sûre de ne pas me tromper. »</p>
+<p><strong>Contradictions <span class="tag t-c">Cours</span></strong> : « Je veux être surpris, mais je ne veux prendre aucun risque. » · « Je veux partir plus souvent, mais organiser me fatigue. » · « Je veux découvrir, mais je retourne toujours aux mêmes endroits. »</p>
+<p><strong>Test des insights candidats <span class="tag t-c">Cours</span></strong></p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Candidat</th>
+<th>Vrai ?</th>
+<th>Émotionnel ?</th>
+<th>Actionnable par la marque ?</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A. « J'ai envie de partir, mais choisir où m'épuise avant même d'avoir bougé. À force de chercher le week-end parfait, je finis par ne pas partir, ou par retourner aux mêmes endroits. »</td>
+<td>Oui : 76 % redoutent le mauvais choix ; 30 % ont abandonné un projet à force de trop réfléchir (2.3)</td>
+<td>Oui : frustration et culpabilité de ne pas partir</td>
+<td>Oui : le service supprime le choix du « où »</td>
+<td><strong>Retenu</strong></td>
+</tr>
+<tr>
+<td>B. « Mes week-ends se ressemblent tous. »</td>
+<td>Oui</td>
+<td>Moyen : constat plus que tension</td>
+<td>Oui</td>
+<td>Intégré à A</td>
+</tr>
+<tr>
+<td>C. « Le meilleur moment d'un voyage, c'est l'attente. »</td>
+<td>Oui (verbatims)</td>
+<td>Oui</td>
+<td>Oui, mais peu freiné : c'est un bénéfice</td>
+<td>Devient la promesse</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Pourquoi A ?</strong> Il nomme le vrai frein : choisir épuise. En retirant le choix, l'offre en fait un soulagement : c'est exactement notre problème publicitaire (1.6). La peur d'être déçu reste, et elle se traite en MOFU par les preuves et les garanties.</p>
+<p><strong>Insight créateur d'usage (cf. Kit Kat) <span class="tag t-c">Cours</span></strong> : oui. Kit Kat légitimait la pause ; Destination Mystère peut installer <strong>« le jour de la révélation »</strong>, le moment où l'on ouvre sa destination, quelques jours avant le départ, seul ou à deux, et qu'on partage. On n'achète plus un week-end : on achète une attente.</p>
+<h2 id="partie-3-construire-le-parcours-consommateur">Partie 3 — Construire le parcours consommateur</h2>
+<p><strong>Question de la consigne</strong> : pour TOFU, MOFU et BOFU, état d'esprit, motivations, interrogations, freins, objectif publicitaire et action attendue. <strong>Outils du cours</strong> : persona qui évolue selon le parcours (cible froide / tiède / chaude), funnel Respire, 3 niveaux d'objectifs, parcours psychologique de Nike. <strong>Lien</strong> : l'insight (2.4) dit ce que Camille ressent ; le funnel dit ce qu'elle doit penser, puis faire, à chaque étape.</p>
+<p><strong>En une phrase</strong> : on fait passer Camille de « je ne sais pas où partir » (TOFU) à « d'autres l'ont fait et ils ont adoré » (MOFU), puis à « je choisis mes dates » (BOFU).</p>
+<p><strong>Deux principes</strong> :</p>
+<ol>
+<li><strong>Chaque étape repose sur de l'espace payant</strong> : DOOH en gare, social ads, display, retail media, Search. L'organique (CRM, comptes sociaux de la marque, partages) n'est qu'un complément. C'est la distinction du cours : publicité ≠ communication <span class="tag t-c">Cours</span>.</li>
+<li><strong>Les preuves sont des UGC</strong> : de vraies révélations filmées par les premiers voyageurs, émouvantes mais toujours signées par les codes SNCF.</li>
+</ol>
+<p><strong>D'où viennent les UGC avant le lancement ?</strong> Une avant-première, <strong>« Les 100 premiers voyageurs mystère »</strong> (semaines 1-2) : des clients SNCF Connect tirés au sort dans la base CRM (100 personnes : 30 couples, 6 groupes de 4 amis et 16 voyageurs seuls, soit 52 séjours) partent en avant-première et filment leur révélation à la verticale. Accord écrit et cession de droits à l'image. Le voyage étant offert, chaque publicité qui utilise ces vidéos l'indique (« Voyage offert par SNCF ») ; s'ils publient eux-mêmes, la mention « Collaboration commerciale » s'impose (loi Influenceurs) <span class="tag t-c">Cours</span>. (dispositif à valider avec SNCF)</p>
+<p><strong>Ce qui rend ces UGC reconnaissables comme SNCF</strong> : on ne voit que la réaction des voyageurs, jamais la destination (le brief interdit de communiquer sur les destinations). La vidéo se referme sur le tableau des départs « ? ? ? » et le jingle SNCF, joué une seule fois avec l'apparition du logo : l'émotion est vraie, la marque signe.</p>
+<h3 id="3-1-tableau-du-funnel">3.1 Tableau du funnel</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>TOFU — Découvrir</th>
+<th>MOFU — Être convaincue par d'autres</th>
+<th>BOFU — Réserver</th>
+<th>Post-achat — Partager</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Température <span class="tag t-c">Cours</span></td>
+<td>Froide</td>
+<td>Tiède</td>
+<td>Chaude</td>
+<td>Cliente</td>
+</tr>
+<tr>
+<td>État d'esprit</td>
+<td>En pilote automatique, en gare ou sur son fil ; n'a pas de projet précis</td>
+<td>Intriguée mais méfiante ; veut voir si « ça marche vraiment »</td>
+<td>Convaincue sur le principe, hésite sur le moment et le prix</td>
+<td>Impatiente, puis fière de raconter</td>
+</tr>
+<tr>
+<td>Motivations</td>
+<td>Envie de casser la routine</td>
+<td>Partir sans rien décider</td>
+<td>Bloquer enfin un week-end (ou l'offrir)</td>
+<td>Vivre et montrer la révélation</td>
+</tr>
+<tr>
+<td>Interrogations</td>
+<td>« C'est quoi ce truc ? C'est vraiment la SNCF ? »</td>
+<td>« Et si je tombe sur une ville que je déteste ? Les autres ont-ils aimé ? Qu'est-ce qui est compris ? »</td>
+<td>« Combien, tout compris ? Je peux annuler ? Et si c'est à l'étranger ? »</td>
+<td>« On va où ? Qu'est-ce que je mets dans la valise ? »</td>
+</tr>
+<tr>
+<td>Freins</td>
+<td>Indifférence ; « la SNCF n'est pas spontanée »</td>
+<td>Peur de la déception ; fiabilité</td>
+<td>Prix ; conditions d'annulation ; dates ; papiers pour l'étranger</td>
+<td>Déception possible à la révélation</td>
+</tr>
+<tr>
+<td>Objectif publicitaire <span class="tag t-c">Cours</span></td>
+<td><strong>Cognitif</strong> (condition) : faire connaître le service</td>
+<td><strong>Affectif</strong> (priorité) : faire aimer l'idée, lever la peur</td>
+<td><strong>Conatif</strong> (finalité) : déclencher la réservation</td>
+<td>Affectif : fidéliser, recommander</td>
+</tr>
+<tr>
+<td>Message clé</td>
+<td>« Vous choisissez… » dates, budget, envies, puis « Vous choisissez quand. On s'occupe du où. »</td>
+<td>« Ils sont 100 à avoir testé et adoré, c'est à votre tour. » + « Vous choisissez vos dates et votre budget. On s'occupe de la destination. »</td>
+<td>« Mystère sur le où. Certitude sur le plaisir. » + « Votre annonce dans 3 jours. » + prix fixe tout compris + conditions + « pièce d'identité valide » pour l'Europe</td>
+<td>« À votre tour de filmer votre annonce. »</td>
+</tr>
+<tr>
+<td>Support payant</td>
+<td>DOOH en gare (Mediatransports) + déclinaison vidéo 6 s en social ads</td>
+<td>Vidéo verticale UGC en social ads (Meta, TikTok) + display contextuel et reciblage</td>
+<td>Retail media SNCF Connect + display reciblage avec compte à rebours + Search + retail media e-carte cadeau chez les distributeurs</td>
+<td>Aucun : complément owned (push J-3, email, comptes SNCF)</td>
+</tr>
+<tr>
+<td>Preuve UGC</td>
+<td>Aucune : temps du teasing</td>
+<td>Vraies révélations : rires et émotion au moment de découvrir la destination, qui n'est jamais dite</td>
+<td>Note moyenne et nombre d'avis réels, citations courtes de voyageurs</td>
+<td>Leur propre vidéo de révélation, qui nourrit les pubs suivantes</td>
+</tr>
+<tr>
+<td>Action attendue</td>
+<td>Regarder, retenir, cliquer vers la page</td>
+<td>Regarder jusqu'au bout, configurer un week-end test</td>
+<td>Réserver ou offrir</td>
+<td>Partager, laisser un avis, recommencer</td>
+</tr>
+<tr>
+<td>Logique de ciblage <span class="tag t-c">Cours</span></td>
+<td>Contexte gare (jeudi et vendredi 16 h - 20 h, dimanche 17 h - 21 h, heures de pointe en semaine) ; social : 25-39 ans, grandes villes, intérêts voyage</td>
+<td>Reciblage : vidéo vue à 50 % sur 14 jours, visiteurs de la page ; display sur sites d'actualité, blogs voyage et lifestyle</td>
+<td>Intentionnistes : configurations abandonnées sur 7 jours, utilisateurs SNCF Connect qui cherchent sans destination, mots-clés « week-end surprise », « idée cadeau couple »</td>
+<td>Clients ayant voyagé</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Inspiration Respire <span class="tag t-c">Cours</span></strong> : chaque colonne lie un blocage client à un format, un message, un ciblage et un objectif. Respire répondait à « les déos naturels ne tiennent pas » par la preuve sociale et le test en conditions réelles ; nous répondons à « et si c'est nul ? » par de vraies révélations.</p>
+<h3 id="3-2-hierarchie-des-objectifs-l-affectif-en-priorite">3.2 Hiérarchie des objectifs : l'affectif en priorité</h3>
+<p>Le cours rappelle qu'une campagne ne remplit pas les 3 objectifs en même temps et qu'il faut prioriser. <strong>Notre priorité est affective</strong> : le cognitif en est la condition, le conatif la finalité mesurée.</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Objectif</th>
+<th>Rôle</th>
+<th>Poids</th>
+<th>Quand (sur 12 semaines)</th>
+<th>Analogie Nike <span class="tag t-c">Cours</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cognitif</td>
+<td>Condition : faire savoir que le service existe</td>
+<td>30 %</td>
+<td>Semaines 1 à 5 (teasing puis lancement)</td>
+<td>Affichage géant en gare, logo visible, aucun prix</td>
+</tr>
+<tr>
+<td><strong>Affectif</strong></td>
+<td><strong>Priorité : faire aimer l'idée, lever la peur de la déception</strong></td>
+<td><strong>45 %</strong></td>
+<td><strong>Semaines 3 à 10</strong></td>
+<td>Storytelling inspirant, preuves en vidéo</td>
+</tr>
+<tr>
+<td>Conatif</td>
+<td>Finalité : les premières réservations</td>
+<td>25 %</td>
+<td>Semaines 6 à 12, en montée</td>
+<td>Reciblage, retail media, bouton « Réserver »</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Pourquoi l'affectif ?</strong></p>
+<ul>
+<li><strong>Le problème publicitaire est émotionnel</strong> : choisir épuise, et laisser une marque choisir paraît risqué. Le cours définit l'objectif affectif comme le fait de « séduire, rassurer, […] changer une perception négative ».</li>
+<li><strong>Le brief le dit</strong> : « susciter l'envie » est affectif ; « générer les premières réservations » est conatif.</li>
+<li><strong>L'achat est engageant</strong> : « plus le produit est cher ou engageant, plus il faut investir dans le cognitif et l'affectif avant de tenter de vendre » <span class="tag t-c">Cours</span>.</li>
+<li><strong>Le funnel UGC est affectif par nature</strong> : vraies révélations, émotion, réassurance.</li>
+</ul>
+<p><strong>En une formule</strong> : « Nous faisons connaître pour faire aimer, et nous faisons aimer pour faire réserver. »</p>
+<h3 id="3-3-points-de-contact">3.3 Points de contact</h3>
+<ol>
+<li><strong>Avant-première</strong> (semaines 1-2) : les 100 premiers voyageurs mystère partent et filment leur révélation.</li>
+<li><strong>Inspiration</strong> : écran DOOH en gare, vidéo courte en social ads (payant).</li>
+<li><strong>Preuve</strong> : vidéos UGC en social ads, display contextuel et reciblage (payant).</li>
+<li><strong>Réservation</strong> : emplacements sponsorisés sur SNCF Connect (retail media) ; e-carte cadeau chez les distributeurs pour la Saint-Valentin et les anniversaires.</li>
+<li><strong>Attente</strong> : J-3, notification de révélation ; indices météo et liste de valise ; rappel « pièce d'identité » si la destination est à l'étranger (fonctionnalités à valider).</li>
+<li><strong>Voyage</strong> : trajet + hébergement, sans rien organiser.</li>
+<li><strong>Partage</strong> : le voyageur filme sa révélation ; avec son accord, sa vidéo alimente les publicités suivantes. C'est la boucle UGC.</li>
+</ol>
+<h2 id="partie-4-definir-la-strategie-et-le-concept-creatifs">Partie 4 — Définir la stratégie et le concept créatifs</h2>
+<p><strong>Question de la consigne</strong> : objectif principal ; promesse, preuve, ton ; approche et parti pris ; différence avec les habitudes de la marque ; territoire et codes. <strong>Outils du cours</strong> : 4 questions de la stratégie créative, 3 grandes approches, Copy Strategy en 6 rubriques (modèle Ariel), types de promesse, 6 types de preuve, 5 critères du ton, Convention → Disruption → Vision, territoire créatif (grille Oasis), 5 questions pour choisir un canal. <strong>Lien</strong> : le funnel (3.1) fixe ce que chaque publicité doit obtenir ; il faut maintenant une seule idée pour les porter toutes.</p>
+<p><strong>Concept retenu : « L'Annonce ».</strong> SNCF détourne ses propres codes d'information voyageurs pour annoncer une destination… masquée, et de vrais voyageurs en apportent la preuve. Signature : <strong>« Vous choisissez quand. On s'occupe du où. »</strong></p>
+<h3 id="4-1-objectif-principal-smart">4.1 Objectif principal (SMART)</h3>
+<p><em>En 12 semaines, auprès des 25-39 ans urbains exposés à la campagne, faire aimer SNCF Destination Mystère (objectif prioritaire, affectif) : 60 % d'agrément de l'offre et 20 % d'intention de réserver dans les 6 mois, mesurés par post-test.</em> (seuils à calibrer avec SNCF)</p>
+<ul>
+<li><strong>Condition (cognitif)</strong> : 25 % de notoriété assistée du service auprès des 25-39 ans exposés.</li>
+<li><strong>Résultat (conatif)</strong> : 1 000 premières réservations sur SNCF Connect, e-cartes cadeaux comprises (méthode : ~170 k€ de diffusion / 1 000 réservations = coût d'acquisition global ~170 €, compatible avec un panier de plusieurs centaines d'euros pour deux).</li>
+</ul>
+<p>Relié au problème (1.6) et à la pondération 30 / 45 / 25 (3.2).</p>
+<h3 id="4-2-les-4-questions-de-la-strategie-creative">4.2 Les 4 questions de la stratégie créative</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Question <span class="tag t-c">Cours</span></th>
+<th>Réponse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Que veut-on obtenir ?</td>
+<td>Que la cible vive l'absence de choix comme un soulagement, puis réserve</td>
+</tr>
+<tr>
+<td>Sur quoi peut-on agir ?</td>
+<td>La perception du risque (pas le prix, pas la vitesse)</td>
+</tr>
+<tr>
+<td>Que veut-on dire ?</td>
+<td>D'autres l'ont vécu et ont adoré ; vous gardez la main sur tout, sauf sur la surprise</td>
+</tr>
+<tr>
+<td>Quel parti pris ?</td>
+<td>Détournement des codes SNCF connus du public (sans autodérision) et émotion des vraies révélations, puis réassurance démonstrative</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="4-3-approche-publicitaire">4.3 Approche publicitaire</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Approche <span class="tag t-c">Cours</span></th>
+<th>Intérêt pour le cas</th>
+<th>Décision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Produit et raison (USP, démonstration)</td>
+<td>Fermée par le brief sur la performance ; utile pour expliquer le <em>mécanisme</em></td>
+<td><strong>Gardée en MOFU et BOFU</strong> uniquement : montrer comment marche la surprise, comme Dyson montre son flux d'air</td>
+</tr>
+<tr>
+<td>Imaginaire et marque (Star Stratégie)</td>
+<td>Rejouer la personnalité SNCF : physique (tableau, quais, jingle), caractère (complice), style (malicieux)</td>
+<td><strong>Retenue</strong> pour l'exécution</td>
+</tr>
+<tr>
+<td>Aspirations et culture (cultural branding)</td>
+<td>Tension culturelle : société du choix infini et peur de rater ; la marque propose le lâcher-prise</td>
+<td><strong>Retenue</strong> comme fondement</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Pourquoi ce choix ?</strong> Le cultural branding (cf. Harley-Davidson et la liberté) donne la raison d'être ; l'imaginaire de marque garantit qu'on reconnaît SNCF en 2 secondes ; les UGC rendent la promesse crédible. La raison n'intervient que pour lever les freins.</p>
+<h3 id="4-4-copy-strategy-en-6-rubriques-modele-ariel">4.4 Copy Strategy en 6 rubriques (modèle Ariel)</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Rubrique</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cible</td>
+<td>Jeunes actifs urbains 25-39 ans, qui aiment partir mais s'épuisent à organiser</td>
+</tr>
+<tr>
+<td>Insight</td>
+<td>« J'ai envie de partir, mais choisir où m'épuise avant même d'avoir bougé. À force de chercher le week-end parfait, je finis par ne pas partir, ou par retourner aux mêmes endroits. »</td>
+</tr>
+<tr>
+<td>Promesse</td>
+<td>Vous choisissez votre date, vous définissez votre budget, vous définissez vos préférences de voyage, et nous trouvons votre destination</td>
+</tr>
+<tr>
+<td>Bénéfice</td>
+<td>Partir sans charge mentale, savourer l'attente</td>
+</tr>
+<tr>
+<td>Preuve</td>
+<td>Les vraies révélations des premiers voyageurs (UGC) ; le mécanisme en 3 choix et les lieux écartés ; trajet + hôtel à prix fixe ; un réseau en France et vers 6 pays voisins</td>
+</tr>
+<tr>
+<td>Ton</td>
+<td>Complice, émotionnel, rassurant</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Type de promesse <span class="tag t-c">Cours</span></strong> : <strong>émotionnelle</strong> (comme Évian et l'esprit de jeunesse), adossée à un socle fonctionnel (zéro organisation). Pas identitaire : on ne demande pas à la cible d'être « aventurière », on la soulage.</p>
+<p><strong>Types de preuve retenus (sans performance du transport)</strong> :</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Preuve <span class="tag t-c">Cours</span></th>
+<th>Application</th>
+<th>Étape</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sociale (preuve principale)</strong></td>
+<td>Vidéos UGC de l'avant-première dès la semaine 3, puis avis réels ; jamais de faux témoignages</td>
+<td>MOFU, BOFU</td>
+</tr>
+<tr>
+<td>Démonstrative</td>
+<td>Montrer la configuration en 3 choix et les lieux écartés dans l'appli</td>
+<td>MOFU</td>
+</tr>
+<tr>
+<td>Technique</td>
+<td>Ce qui est inclus, quand la destination est révélée, « France seulement » ou « France + Europe »</td>
+<td>MOFU, BOFU</td>
+</tr>
+<tr>
+<td>Expertise</td>
+<td>SNCF connaît son réseau : plus de 200 destinations grande vitesse en France et en Europe (<a href="https://www.sncf-voyageurs.com/fr/voyagez-avec-nous/en-france/tgv-inoui/nos-destinations-tgv-inoui/">SNCF Voyageurs</a>)</td>
+<td>TOFU, MOFU</td>
+</tr>
+<tr>
+<td>Expérientielle</td>
+<td>Simulateur sans engagement : « Configurez votre week-end, découvrez votre profil de voyageur »</td>
+<td>MOFU</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Ton vérifié par les 5 critères du cours</strong></p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Critère</th>
+<th>Cohérence du ton complice et émotionnel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Positionnement de la marque</td>
+<td>Oui : SNCF pratique déjà la connivence (OUIGO, TGV INOUI) ; on la garde sans se moquer du service</td>
+</tr>
+<tr>
+<td>Sensibilité du sujet</td>
+<td>Aucune référence aux retards ni aux perturbations</td>
+</tr>
+<tr>
+<td>Attentes de la cible</td>
+<td>Les 25-39 ans font davantage confiance aux vraies réactions qu'aux mises en scène</td>
+</tr>
+<tr>
+<td>Contexte d'exposition</td>
+<td>En gare, les codes d'annonce sont compris instantanément</td>
+</tr>
+<tr>
+<td>Objectif</td>
+<td>L'émotion sert l'affectif, priorité de la campagne ; la réassurance prépare le conatif</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Parti pris</strong> : aspirationnel et émotionnel, porté par de vrais voyageurs, et cadré par les codes SNCF ; démonstratif en appui (cf. Rexona) pour lever les freins.</p>
+<p><strong>Réponse aux freins (sans promesse non prouvable ni allégation environnementale absolue)</strong></p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Frein</th>
+<th>Réponse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>« Et si la destination me déçoit ? »</td>
+<td>Choix des envies (ville, nature, mer…) et possibilité d'écarter des lieux ; vraies révélations à l'appui</td>
+</tr>
+<tr>
+<td>« Qu'est-ce qui est compris ? »</td>
+<td>Trajet aller-retour + hébergement, prix fixe affiché tout compris</td>
+</tr>
+<tr>
+<td>« Et si c'est à l'étranger ? »</td>
+<td>Choix « France seulement » ou « France + Europe » ; mention « pièce d'identité valide »</td>
+</tr>
+<tr>
+<td>« Et si je dois annuler ? »</td>
+<td>Annulation possible moyennant frais, conditions indiquées avant l'achat (forfait)</td>
+</tr>
+<tr>
+<td>« Et si le train a du retard ? »</td>
+<td>Ne rien promettre ; renvoyer vers les engagements existants de SNCF et la responsabilité du vendeur de forfait</td>
+</tr>
+<tr>
+<td>« Je ne saurai pas quoi emporter »</td>
+<td>Indices et météo envoyés avant la révélation</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="4-5-disruption-et-rupture-avec-les-habitudes-sncf">4.5 Disruption et rupture avec les habitudes SNCF</h3>
+<p><strong>Convention → Disruption → Vision <span class="tag t-c">Cours</span></strong></p>
+<ul>
+<li><strong>Convention</strong> : la publicité voyage montre la destination (cartes postales, drone, couples au soleil) et le prix ; SNCF y ajoute la vitesse (320 km/h) ou un film musical avec des acteurs.</li>
+<li><strong>Disruption</strong> : ne jamais montrer la destination. Utiliser l'information voyageurs, dont le rôle est de dire où va le train, pour ne pas le dire. Et laisser de vrais voyageurs porter l'émotion à la place des acteurs. L'absence devient le message, la réaction devient la preuve.</li>
+<li><strong>Vision</strong> : SNCF, la marque qui rend l'envie de partir plus forte que la peur de mal choisir.</li>
+</ul>
+<p><strong>Disruption sans autodérision</strong> : on reste dans les codes SNCF connus du public, détournés pour retenir l'information, sans jamais se moquer du service. Les accroches des trois publicités :</p>
+<ul>
+<li>Pub 1 : « Vous choisissez… » dates, budget, envies, puis « Vous choisissez quand. On s'occupe du où. »</li>
+<li>Pub 2 : « Ils sont 100 à avoir testé et adoré, c'est à votre tour. »</li>
+<li>Pub 3 : « Mystère sur le où. Certitude sur le plaisir. »</li>
+</ul>
+<p><strong>Ce qu'on garde / ce qu'on casse</strong></p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>On garde (identité, reconnu en 2 secondes)</th>
+<th>Pourquoi</th>
+<th>On casse (habitudes)</th>
+<th>Pourquoi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Logo SNCF, palette, typographie de la charte</td>
+<td>Signature visuelle non négociable</td>
+<td>Le visuel de destination</td>
+<td>Interdit par le brief, et le produit le cache</td>
+</tr>
+<tr>
+<td>Le tableau des départs</td>
+<td>Code que tous les Français connaissent</td>
+<td>Le prix d'appel en accroche</td>
+<td>Achat engageant, pas impulsif</td>
+</tr>
+<tr>
+<td>Le jingle en 4 notes (à vérifier dans la charte sonore)</td>
+<td>Mémoire sonore immédiate ; il signe la vidéo UGC</td>
+<td>La vitesse et la performance</td>
+<td>Interdit par le brief</td>
+</tr>
+<tr>
+<td>La complicité avec le public, par ses codes</td>
+<td>Crédible pour la marque</td>
+<td>Les acteurs et égéries</td>
+<td>Remplacés par de vrais voyageurs, plus crédibles</td>
+</tr>
+<tr>
+<td>La gare comme décor</td>
+<td>Lieu propre à SNCF</td>
+<td>Le film émotionnel long en TV</td>
+<td>Hors budget, territoire déjà occupé par SNCF Connect</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="4-6-concepts-creatifs">4.6 Concepts créatifs</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Concept 1 — « L'Annonce » (retenu)</strong></th>
+<th><strong>Concept 2 — « La Tête de la révélation » (écarté, idée récupérée)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Idée centrale</td>
+<td>SNCF utilise ses codes d'annonce (tableau des départs, jingle) pour annoncer une destination masquée ; de vrais voyageurs en apportent la preuve</td>
+<td>Filmer le visage des gens au moment où ils découvrent leur destination</td>
+</tr>
+<tr>
+<td>Lien avec l'insight</td>
+<td>On retire le « où » à celle que le choix épuise ; on lui rend l'attente</td>
+<td>L'attente et la révélation sont le meilleur moment</td>
+</tr>
+<tr>
+<td>Accroche type</td>
+<td>« Vous choisissez… » dates, budget, envies</td>
+<td>« Cette tête-là, ça ne s'organise pas. »</td>
+</tr>
+<tr>
+<td>Signature</td>
+<td>« Vous choisissez quand. On s'occupe du où. »</td>
+<td>« Le voyage commence avant le départ. »</td>
+</tr>
+<tr>
+<td>TOFU</td>
+<td>Tableau des départs en gare : la destination reste « ? ? ? »</td>
+<td>Montage de réactions</td>
+</tr>
+<tr>
+<td>MOFU</td>
+<td>Vraies révélations filmées par les voyageurs ; la destination n'est jamais dite</td>
+<td>Témoignages : « j'avais peur, puis… »</td>
+</tr>
+<tr>
+<td>BOFU</td>
+<td>« Votre annonce dans 3 jours » : compte à rebours et bouton Réserver</td>
+<td>« À vous de faire cette tête » + offre</td>
+</tr>
+<tr>
+<td>Forces</td>
+<td>Reconnaissable en 2 secondes ; rupture claire ; preuve sociale crédible</td>
+<td>Très émotionnel, natif des réseaux sociaux</td>
+</tr>
+<tr>
+<td>Faiblesses</td>
+<td>Dépend de l'avant-première pour obtenir les UGC</td>
+<td>Codes déjà vus (Wizz Air, Eurostar) ; peu identifiable SNCF sans cadre de marque</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Pourquoi le concept 1 ?</strong> Il résout la tension du cas : il <strong>rompt</strong> avec les habitudes (aucune destination, aucun prix, aucune vitesse, aucun acteur) en <strong>utilisant</strong> l'identité SNCF la plus reconnaissable. Il absorbe le meilleur du concept 2 (l'émotion des vraies révélations) en le signant par le tableau des départs et le jingle. Enfin, il fait de la gare, lieu propre à SNCF, le point de départ de la campagne.</p>
+<h3 id="4-7-territoire-creatif-du-concept-retenu-grille-oasis">4.7 Territoire créatif du concept retenu (grille Oasis)</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Élément</th>
+<th>Concept « L'Annonce »</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Univers</td>
+<td>La gare comme théâtre de l'attente : quais, halls, écrans</td>
+</tr>
+<tr>
+<td>Personnages</td>
+<td>Les vrais voyageurs mystère, filmés par eux-mêmes (UGC)</td>
+</tr>
+<tr>
+<td>Ton</td>
+<td>Complice, émotionnel, rassurant ; jamais d'autodérision sur le service</td>
+</tr>
+<tr>
+<td>Codes narratifs</td>
+<td>Le suspense, l'information volontairement retenue, la révélation différée, la réaction vraie</td>
+</tr>
+<tr>
+<td>Codes visuels</td>
+<td>Tableau des départs à palettes qui s'arrêtent sur « ? ? ? » ; champ destination masqué ; palette bleu nuit et jaune d'afficheur, logo SNCF</td>
+</tr>
+<tr>
+<td>Symboles et sons</td>
+<td>Le « ? » dans le champ destination ; le jingle SNCF, suspendu dans la version sociale de la Pub 1, joué une seule fois avec le logo à la fin de la Pub 2</td>
+</tr>
+<tr>
+<td>Signature</td>
+<td>« Vous choisissez quand. On s'occupe du où. »</td>
+</tr>
+</tbody>
+</table></div>
+<p>Ces codes sont communs aux trois publicités ; la progression se lit dans le tableau : « ? ? ? » en gare, révélations en vidéo, puis « votre train » dans la bannière.</p>
+<h3 id="4-8-recommandation-des-supports-des-trois-publicites">4.8 Recommandation des supports des trois publicités</h3>
+<p><strong>Le DOOH en gare est bien de l'espace payant.</strong> Les gares dépendent de SNCF Gares &amp; Connexions, une autre filiale du groupe, et leur publicité est vendue en exclusivité par la régie Mediagares (GIE Mediatransports) depuis 2008 (<a href="https://www.garesetconnexions.sncf/fr/retail/retail-brand-event">Gares &amp; Connexions</a>), contrat reconduit pour 10 ans à partir de 2022 (<a href="https://fr.themedialeader.com/?p=48989">The Media Leader</a>). SNCF Voyageurs l'achète comme tout annonceur. Les vrais tableaux d'information voyageurs ne sont pas utilisés : la publicité détourne leurs codes sur des écrans publicitaires, sans tromper les voyageurs sur leurs trains.</p>
+<p><strong>Retail media : deux usages</strong> :</p>
+<ul>
+<li><strong>Sur SNCF Connect</strong> : SNCF Connect dispose de sa propre régie (<a href="https://www.sncf-connect.com/outils/regie-publicitaire">SNCF Connect</a>). On achète des emplacements sponsorisés là où l'utilisateur cherche un trajet sans destination précise : « Pas d'idée ? Laissez-nous choisir. »</li>
+<li><strong>Chez les distributeurs</strong> : une e-carte cadeau Destination Mystère vendue par des enseignes (par exemple Fnac Darty ou Carrefour) et poussée par leurs régies retail media à la Saint-Valentin et pour les anniversaires (distributeurs et régies à confirmer).</li>
+</ul>
+<p><strong>Combinaisons possibles (règle : au moins 2 formats différents <span class="tag t-g">Consigne</span>)</strong></p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Combinaison</th>
+<th>TOFU</th>
+<th>MOFU</th>
+<th>BOFU</th>
+<th>Formats</th>
+<th>Avis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A (recommandée)</strong></td>
+<td>DOOH gare animé « Tableau des départs » (Pub 1 « Les gares », + déclinaison 6 s en social ads)</td>
+<td>Vidéo verticale UGC en social ads (Pub 2 « Les réseaux sociaux »)</td>
+<td>Bannières animées (Pub 3 « Display ») en retail media SNCF Connect et display reciblage</td>
+<td>Affichage digital, vidéo sociale, bannière display</td>
+<td>Tout en payant, preuve UGC au centre, 3 formats réalisables</td>
+</tr>
+<tr>
+<td>B</td>
+<td>Spot audio 30 s avec une voix d'annonce</td>
+<td>Vidéo UGC en social ads</td>
+<td>Story interactive + push CRM</td>
+<td>Audio, vidéo, social</td>
+<td>Original mais peu visuel ; BOFU trop owned</td>
+</tr>
+<tr>
+<td>C</td>
+<td>DOOH gare</td>
+<td>Carrousel UGC</td>
+<td>Search + retail media e-carte</td>
+<td>Affichage digital, carrousel, texte</td>
+<td>Moins émotionnel en MOFU</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Pourquoi A ?</strong> La gare est le contexte d'attente où le tableau des départs a tout son sens (Q2 contexte) ; le DOOH y est déclenchable selon les trains réels (<a href="https://fr.themedialeader.com/?p=110989">The Media Leader</a>). La vidéo UGC porte la preuve là où la cible se renseigne (Q1 audience). Le retail media touche Camille au moment précis où elle cherche un trajet sans savoir où aller (Q3 objectif). Les trois formats se réalisent sans tournage professionnel.</p>
+<p><strong>Canaux écartés et pourquoi (5 questions du cours)</strong></p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Canal</th>
+<th>Question du cours qui l'écarte</th>
+<th>Justification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TV nationale</td>
+<td>Coût, création</td>
+<td>Un seul plan TV dépasse le budget total ; c'est l'habitude SNCF qu'on veut casser</td>
+</tr>
+<tr>
+<td>Cinéma</td>
+<td>Coût, audience</td>
+<td>Coûts de production et de diffusion élevés ; ciblage des 25-39 ans imprécis</td>
+</tr>
+<tr>
+<td>Radio nationale</td>
+<td>Audience, coût</td>
+<td>Audience large mais peu ciblée ; l'audio digital fait mieux pour moins cher</td>
+</tr>
+<tr>
+<td>Presse écrite</td>
+<td>Audience, création</td>
+<td>Les 25-39 ans lisent peu la presse papier ; format statique, sans jingle ni animation</td>
+</tr>
+<tr>
+<td>Affichage classique (4×3, abribus)</td>
+<td>Contexte, coût</td>
+<td>En ville, on perd l'attente en gare qui donne son sens au tableau ; couverture nationale coûteuse</td>
+</tr>
+<tr>
+<td>Influence macro</td>
+<td>Coût, crédibilité</td>
+<td>Coûteuse, encadrée par la loi Influenceurs ; une vraie révélation convainc mieux qu'un créateur rémunéré</td>
+</tr>
+<tr>
+<td>LinkedIn, Snapchat, Twitch</td>
+<td>Audience</td>
+<td>Professionnelle sur LinkedIn, trop jeune ou de niche sur les deux autres</td>
+</tr>
+<tr>
+<td>Emailing ou SMS sur fichiers loués</td>
+<td>Coût, cadre légal</td>
+<td>RGPD ; le fichier client SNCF (owned) fait mieux</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="partie-5-realiser-trois-publicites">Partie 5 — Réaliser trois publicités</h2>
+<p><strong>Question de la consigne</strong> : une publicité TOFU (faire découvrir, susciter l'intérêt), une MOFU (convaincre, lever les freins), une BOFU (déclencher l'action), chacune justifiée par son message, ses techniques créatives, ses leviers de persuasion, son format et sa cohérence avec l'insight, la cible et le concept. <strong>Outils du cours</strong> : storytelling, consommateur héros / marque guide (GMF), AIDA, PAS, démonstration, émotion, 7 leviers de persuasion. <strong>Lien</strong> : la combinaison A retenue (4.8) donne les trois supports ; le funnel (3.1) donne à chacun son frein à lever.</p>
+<p><strong>Un seul concept, trois publicités : faire connaître, faire aimer, faire consommer.</strong> Le « ? ? ? », le jingle SNCF et la signature les relient.</p>
+<p><strong>Les trois publicités en une ligne</strong> : Pub 1 « Les gares » fait découvrir (DOOH en gare), Pub 2 « Les réseaux sociaux » prouve par de vrais voyageurs (vidéo UGC en social ads), Pub 3 « Display » fait réserver (bannière animée en retail media et display).</p>
+<h3 id="5-1-fiches-de-justification">5.1 Fiches de justification</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Rubrique</th>
+<th><strong>Pub 1 — TOFU « Les gares »</strong></th>
+<th><strong>Pub 2 — MOFU « Les réseaux sociaux »</strong></th>
+<th><strong>Pub 3 — BOFU « Display »</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Objectif <span class="tag t-c">Cours</span></td>
+<td>Cognitif (condition) : faire connaître le service et son principe</td>
+<td>Affectif (priorité) : faire aimer l'idée et lever la peur de la déception</td>
+<td>Conatif (finalité) : déclencher la réservation ou l'achat de l'e-carte</td>
+</tr>
+<tr>
+<td>Frein visé</td>
+<td>Indifférence ; « La SNCF, spontanée ? »</td>
+<td>« Et si c'est nul ? » ; « Les autres ont-ils aimé ? »</td>
+<td>Prix, annulation, dates, papiers pour l'étranger</td>
+</tr>
+<tr>
+<td>Message</td>
+<td>« Vous choisissez… » dates, budget, envies, puis « Vous choisissez quand. On s'occupe du où. »</td>
+<td>« Ils sont 100 à avoir testé et adoré, c'est à votre tour. » De vrais voyageurs découvrent leur destination ; vous choisissez vos dates et votre budget</td>
+<td>« Mystère sur le où. Certitude sur le plaisir. » Votre week-end est presque prêt ; prix fixe tout compris ; conditions claires</td>
+</tr>
+<tr>
+<td>Action attendue</td>
+<td>Regarder, retenir, chercher « Destination Mystère »</td>
+<td>Regarder jusqu'au bout, configurer un week-end test</td>
+<td>Réserver ou offrir</td>
+</tr>
+<tr>
+<td>Techniques créatives <span class="tag t-c">Cours</span></td>
+<td>Disruption des codes (Convention → Disruption) ; suspense ; AIDA réduit à Attention et Intérêt</td>
+<td>Storytelling, le consommateur héros et la marque guide (cf. GMF) ; émotion ; démonstration du mécanisme</td>
+<td>AIDA complet ; démonstration courte ; personnalisation dynamique</td>
+</tr>
+<tr>
+<td>Leviers de persuasion <span class="tag t-c">Cours</span></td>
+<td><strong>Curiosité</strong> : le « ? ? ? » qu'on a envie de résoudre ; <strong>Unité</strong> : un code que tous les Français partagent (le tableau, l'annonce)</td>
+<td><strong>Preuve sociale</strong> : de vraies réactions ; <strong>sympathie</strong> : des gens ordinaires, pas des acteurs</td>
+<td><strong>Engagement et cohérence</strong> : « votre configuration vous attend » ; <strong>preuve sociale</strong> : note réelle des voyageurs. Pas de rareté : aucune limite réelle à annoncer</td>
+</tr>
+<tr>
+<td>Format et spécifications</td>
+<td>Spot muet de 15 s en boucle sur écran vertical en gare (1080 × 1920 px ; durée et format à confirmer auprès de Mediatransports) ; présenté en maquette in situ 16:9 de 15 s ; déclinaison 6 s en 9:16 avec son pour les social ads</td>
+<td>Vidéo 9:16, 1080 × 1920 px, 23 s, textes incrustés, zones de sécurité des interfaces respectées</td>
+<td>6 formats animés en 9 s (3 vignettes, 2 boucles maximum) : bannière 728 × 90 (en-tête de site d'actualité), pavé 300 × 250 (colonne d'article), grand angle 300 × 600 (blog voyage), bannière mobile 320 × 100 (haut d'article sur smartphone), e-carte cadeau 300 × 250 (site distributeur), carte native dans l'appli SNCF Connect (format à confirmer avec la régie)</td>
+</tr>
+<tr>
+<td>Support et canal</td>
+<td>DOOH en gare (Mediatransports), sur les créneaux où la cible est en gare : jeudi et vendredi 16 h - 20 h, dimanche 17 h - 21 h, heures de pointe en semaine (6.3)</td>
+<td>Social ads Meta (Reels, Stories) et TikTok</td>
+<td>Retail media SNCF Connect + display reciblage ; version e-carte cadeau en retail media distributeurs</td>
+</tr>
+<tr>
+<td>Cohérence avec l'insight</td>
+<td>Personne ne vous demande de choisir : même le tableau garde le secret</td>
+<td>Ceux qui n'ont pas choisi sont les plus heureux</td>
+<td>Le seul choix qui reste : la date</td>
+</tr>
+<tr>
+<td>Cohérence avec la cible</td>
+<td>Camille passe en gare et lève les yeux vers les écrans</td>
+<td>Camille fait confiance aux vraies réactions, pas aux mises en scène</td>
+<td>Camille a commencé une configuration ou cherche un trajet sans destination</td>
+</tr>
+<tr>
+<td>Cohérence avec le concept</td>
+<td>Le tableau des départs « ? ? ? », jingle suspendu (version sociale)</td>
+<td>Le tableau des départs « ? ? ? » puis le jingle SNCF, joué une seule fois avec le logo</td>
+<td>Le tableau affiche son train et ses dates</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="5-2-contenu-creatif-detaille">5.2 Contenu créatif détaillé</h3>
+<h4 id="pub-1-tofu-les-gares-dooh-en-gare-15-s-muet">Pub 1 — TOFU « Les gares » (DOOH en gare, 15 s muet)</h4>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Image</th>
+<th>Texte à l'écran</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-2 s</td>
+<td>Écran vertical bleu nuit façon tableau des départs à palettes ; les palettes défilent, l'heure se fixe sur 18:42</td>
+<td>Heure : 18:42 · Destination : (lettres qui défilent)</td>
+</tr>
+<tr>
+<td>2-5 s</td>
+<td>Les lettres de la destination ralentissent et s'arrêtent sur « ? ? ? ? ? ? » ; la colonne Voie affiche « ? »</td>
+<td>« ? ? ? ? ? ? » · Voie : « ? »</td>
+</tr>
+<tr>
+<td>5-10 s</td>
+<td>« Vous choisissez… » apparaît au-dessus de la ligne ; les palettes affichent tour à tour les trois choix laissés au voyageur</td>
+<td>« Vous choisissez… » DATES → BUDGET → ENVIES</td>
+</tr>
+<tr>
+<td>10-11,5 s</td>
+<td>Fondu ; les palettes se recomposent en nom de l'offre</td>
+<td>« Prochain départ · vendredi » · « DESTINATION MYSTÈRE »</td>
+</tr>
+<tr>
+<td>11,5-14,5 s</td>
+<td>Signature, bouton, logo SNCF et mention légale</td>
+<td><strong>« Vous choisissez quand. On s'occupe du où. »</strong> (« où » en jaune) · « Sur SNCF Connect » · « Offre soumise à conditions, détails sur SNCF Connect. »</td>
+</tr>
+<tr>
+<td>14,5-15 s</td>
+<td>Fondu ; les palettes repartent et la boucle recommence</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>Hiérarchie de lecture</strong> : 1. le « ? ? ? » (curiosité) ; 2. les trois choix laissés au voyageur (dates, budget, envies) ; 3. la signature ; 4. logo et bouton.</li>
+<li><strong>Logo et signature</strong> : logo SNCF en bas à gauche, signature au centre de l'écran ; jamais de prix, jamais de ville.</li>
+<li><strong>Appel à l'action</strong> : « Sur SNCF Connect » (pas de bouton cliquable en DOOH).</li>
+<li><strong>Mentions</strong> : « Offre soumise à conditions, détails sur SNCF Connect. » (contenu exact à valider avec SNCF).</li>
+<li><strong>Maquette de présentation</strong> : vidéo in situ 16:9 de 15 s ; l'écran vertical est montré dans un hall de gare animé, pour juger la pub dans son contexte.</li>
+<li><strong>Déclinaison 6 s pour les social ads</strong> : mêmes images ; le jingle SNCF joue trois notes et s'arrête sur la quatrième au moment du « ? ? ? ».</li>
+</ul>
+<h4 id="pub-2-mofu-les-reseaux-sociaux-video-verticale-ugc-23-s">Pub 2 — MOFU « Les réseaux sociaux » (vidéo verticale UGC, 23 s)</h4>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Plan</th>
+<th>Durée</th>
+<th>Image</th>
+<th>Son</th>
+<th>Texte à l'écran</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0-2,5 s</td>
+<td>Canapé, le soir : un couple découvre sa destination sur le téléphone ; elle porte la main à la bouche, il la serre dans ses bras</td>
+<td>Rires</td>
+<td>—</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2,5-5,5 s</td>
+<td>Vestiaire d'hôpital : une infirmière en tenue découvre la sienne, entre surprise et fou rire</td>
+<td>Rires</td>
+<td>—</td>
+</tr>
+<tr>
+<td>3</td>
+<td>5,5-8 s</td>
+<td>Cuisine, entre amis : le groupe explose de joie, bras levés</td>
+<td>Rires et cris de joie</td>
+<td>—</td>
+</tr>
+<tr>
+<td>4</td>
+<td>8-11 s</td>
+<td>Quai de gare : un couple se prend en selfie, bisou et signe de victoire</td>
+<td>Rires</td>
+<td>—</td>
+</tr>
+<tr>
+<td>5</td>
+<td>11-13 s</td>
+<td>Tableau des départs à palettes : la destination tombe sur « ? ? ? ? ? »</td>
+<td>—</td>
+<td>« ? ? ? ? ? »</td>
+</tr>
+<tr>
+<td>6</td>
+<td>13-16 s</td>
+<td>Nom de l'offre sur le tableau</td>
+<td>—</td>
+<td>« SNCF Destination Mystère » · « Train + hôtel inclus »</td>
+</tr>
+<tr>
+<td>7</td>
+<td>16-19 s</td>
+<td>Le mécanisme</td>
+<td>—</td>
+<td>« Vous choisissez vos dates et votre budget. » · <strong>« On s'occupe de la destination. »</strong></td>
+</tr>
+<tr>
+<td>8</td>
+<td>19-23 s</td>
+<td>Preuve sociale, logo SNCF</td>
+<td>Jingle SNCF, joué une seule fois, avec l'apparition du logo</td>
+<td>« Ils sont 100 à avoir testé et adoré, <strong>c'est à votre tour.</strong> » · « Sur SNCF Connect »</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>Quatre révélations, quatre profils</strong> : un couple, une infirmière seule (Camille), un groupe d'amis, un couple au départ ; ils reflètent l'avant-première (couples, groupes et voyageurs seuls).</li>
+<li><strong>Texte d'annonce (Meta, TikTok)</strong> : « Ils ont choisi leurs dates et leur budget. On a choisi la destination. Regardez leur tête. »</li>
+<li><strong>Bouton d'action</strong> : « En savoir plus » vers la page Destination Mystère sur SNCF Connect.</li>
+<li><strong>Mention à ajouter en fin de vidéo</strong> : « Voyages offerts aux participants de l'avant-première. »</li>
+<li><strong>Condition de diffusion du message</strong> : « Ils sont 100 à avoir testé et adoré » n'est diffusé qu'après l'avant-première, appuyé sur les avis réels des participants ; sinon la phrase serait une allégation non prouvée (ARPP).</li>
+<li><strong>Pourquoi ce script</strong> : les plans 1 à 4 sont l'image de la campagne (émotion vraie, destination jamais dite) ; le plan 7 lève le frein principal en rappelant que le voyageur garde la main ; le plan 8 laisse la marque signer, le voyageur reste le héros (cf. GMF).</li>
+</ul>
+<h4 id="pub-3-bofu-display-bannieres-animees-retail-media-et-display">Pub 3 — BOFU « Display » (bannières animées, retail media et display)</h4>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Vignette</th>
+<th>Durée</th>
+<th>Contenu</th>
+<th>Texte</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0-3 s</td>
+<td>Mini tableau des départs personnalisé avec les dates de la configuration abandonnée (reciblage dynamique)</td>
+<td>« Votre train : vendredi 18:42 · Destination : ? ? ? »</td>
+</tr>
+<tr>
+<td>2</td>
+<td>3-6 s</td>
+<td>Le « ? ? ? » clignote une fois ; preuve sociale</td>
+<td>« Votre annonce dans 3 jours. » · « Note des premiers voyageurs : [note réelle et nombre d'avis, insérés automatiquement] »</td>
+</tr>
+<tr>
+<td>3</td>
+<td>6-9 s</td>
+<td>Message, prix fixe et bouton</td>
+<td>« Mystère sur le où. Certitude sur le plaisir. » · « Trajet + hôtel, tout compris : dès 229 € pour deux » · bouton <strong>« Réserver mon week-end »</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Grille tarifaire retenue</strong> (prix fictifs pour la maquette) : Escapade, 1 nuit, France : 229 € pour deux ; Grand week-end, 2 nuits, France : 379 € ; Grand week-end Europe, 2 nuits, France + Europe : 499 €. La bannière affiche le palier le plus bas, « dès 229 € pour deux », qui doit correspondre à un prix réellement disponible. Méthode : prix moyen d'une nuit d'hôtel en France de 133 € en 2025 (<a href="https://www.voyages-d-affaires.com/?p=216609">Voyages d'Affaires</a>) et billet OUIGO moyen de 34,70 € (<a href="https://ulysse.com/news/?p=48243">Ulysse / FNAUT</a>), soit environ 270 € pour une nuit à deux au prix moyen ; SNCF peut faire moins en remplissant des sièges invendus et en négociant ses hôtels.</p>
+<p><strong>Voyageurs seuls et groupes d'amis</strong> : l'avant-première les inclut, donc l'offre aussi. La grille devra prévoir un prix solo et un prix groupe, à côté des prix « pour deux » (à définir avec SNCF).</p>
+<ul>
+<li><strong>Mentions légales (vignette 3, lisibles)</strong> : « Prix TTC pour 2 personnes, trajet aller-retour et hébergement. Annulation possible avec frais selon conditions. Pièce d'identité valide requise pour les destinations à l'étranger. » (contenu exact à valider avec SNCF)</li>
+<li><strong>Version retail media SNCF Connect</strong> (carte native dans les résultats de recherche ou la page d'accueil) : « Pas d'idée ? Laissez-nous choisir. » · « SNCF Destination Mystère » · bouton « Essayer ».</li>
+<li><strong>Version e-carte cadeau</strong> (retail media distributeurs, Saint-Valentin) : « Offrez-lui une annonce. » · « E-carte cadeau SNCF Destination Mystère » · bouton « Offrir ».</li>
+<li><strong>Le compte à rebours n'est pas une fausse urgence</strong> : « dans 3 jours » décrit la mécanique réelle du service (révélation quelques jours avant le départ), pas une promotion limitée.</li>
+</ul>
+<h3 id="5-3-briefs-de-production-pour-notre-equipe">5.3 Briefs de production pour notre équipe</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Rubrique</th>
+<th>Pub 1 — « Les gares »</th>
+<th>Pub 2 — « Les réseaux sociaux »</th>
+<th>Pub 3 — « Display »</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Outils</td>
+<td>Figma (cadres 1080 × 1920), After Effects ou Canva (animation des lettres), police libre façon afficheur (type Space Mono, Martian Mono)</td>
+<td>Smartphone en 4K vertical, CapCut ou Premiere (montage, sous-titres), Figma (maquette d'écran d'appli et bandeau « tableau »)</td>
+<td>Figma (6 formats), Google Web Designer ou Canva (animation HTML5 ou GIF), maquette de carte native SNCF Connect</td>
+</tr>
+<tr>
+<td>Ressources</td>
+<td>Logo SNCF (usage pédagogique), fond bleu nuit, jingle SNCF pour la version sociale</td>
+<td>4 mini-scènes de révélation (couple, infirmière, amis, quai de gare) ; jingle SNCF en signature</td>
+<td>Textes définitifs, valeurs fictives clairement signalées pour la note et le prix</td>
+</tr>
+<tr>
+<td>Étapes</td>
+<td>1. Cadres fixes dans Figma. 2. Animation du défilement. 3. Export MP4 15 s muet. 4. Maquette in situ 16:9 (écran incrusté dans un hall de gare). 5. Version 6 s avec son</td>
+<td>1. Écrire les 4 situations. 2. Tourner en vertical, sans direction d'acteur, pour garder le naturel. 3. Monter les 4 révélations, puis le tableau et les textes. 4. Placer le jingle avec le logo, exporter 23 s</td>
+<td>1. Maquetter les 3 vignettes. 2. Animer. 3. Décliner en 4 formats display + carte native SNCF Connect + version e-carte. 4. Vérifier la lisibilité des mentions</td>
+</tr>
+<tr>
+<td>Temps estimé</td>
+<td>1 jour</td>
+<td>2 jours (½ jour de tournage, 1 jour ½ de montage)</td>
+<td>½ jour</td>
+</tr>
+<tr>
+<td>IA générative <span class="tag t-c">Cours</span></td>
+<td>Possible pour un fond de gare flou ; à signaler</td>
+<td>Pas pour les visages : les réactions doivent rester vraies</td>
+<td>Possible pour des variantes A/B de textes</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Points de vigilance</strong> :</p>
+<ul>
+<li><strong>Droit à l'image</strong> : autorisation écrite de chaque personne filmée, même des proches.</li>
+<li><strong>Logo et jingle SNCF</strong> : le vrai jingle SNCF est utilisé, dans un cadre pédagogique uniquement : « Projet étudiant, non commandé par SNCF ; logo et jingle propriété de SNCF ».</li>
+<li><strong>Statut des vidéos</strong> : ce sont des <strong>maquettes</strong>, pas de vrais clients ; dans la campagne réelle, les vidéos viendraient de l'avant-première.</li>
+<li><strong>Rendu professionnel</strong> : marges de sécurité, sous-titres lisibles sans le son, aucune faute dans les mentions.</li>
+</ul>
+<h3 id="5-4-planche-de-campagne-une-seule-campagne-en-trois-temps">5.4 Planche de campagne : une seule campagne en trois temps</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Code commun</th>
+<th>Pub 1 — TOFU</th>
+<th>Pub 2 — MOFU</th>
+<th>Pub 3 — BOFU</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tableau des départs « ? ? ? »</td>
+<td>Plein écran</td>
+<td>En fin de vidéo, avant le nom de l'offre</td>
+<td>Mini tableau personnalisé</td>
+</tr>
+<tr>
+<td>Jingle SNCF</td>
+<td>Suspendu avant la 4e note (version sociale ; DOOH muet)</td>
+<td>Joué une seule fois, avec le logo</td>
+<td>Absent (bannière muette)</td>
+</tr>
+<tr>
+<td>Palette et typographie</td>
+<td>Bleu nuit, lettres jaunes d'afficheur, logo SNCF</td>
+<td>Idem en habillage</td>
+<td>Idem</td>
+</tr>
+<tr>
+<td>Signature</td>
+<td>« Vous choisissez quand. On s'occupe du où. »</td>
+<td>Idem</td>
+<td>Idem + bouton</td>
+</tr>
+<tr>
+<td>Progression du message</td>
+<td>Découvrir : « il existe un train dont on ne connaît pas la destination »</td>
+<td>Croire : « d'autres l'ont pris et ont adoré »</td>
+<td>Agir : « le vôtre part vendredi »</td>
+</tr>
+</tbody>
+</table></div>
+<p>On reconnaît une seule campagne grâce à trois codes : le « ? ? ? », le jingle et la signature. Le message, lui, avance de la curiosité à la preuve puis à l'action.</p>
+<h3 id="5-5-check-list-de-conformite">5.5 Check-list de conformité</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Point</th>
+<th>Règle</th>
+<th>Application à la campagne</th>
+<th>Statut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ARPP</td>
+<td>Respect des recommandations de déontologie ; conseil avant diffusion possible</td>
+<td>Soumettre les 3 créations pour conseil avant diffusion</td>
+<td>À faire</td>
+</tr>
+<tr>
+<td>Publicité trompeuse</td>
+<td>Toute promesse doit être prouvée ; pas de faux avis <span class="tag t-c">Cours</span></td>
+<td>Note et nombre d'avis réels uniquement ; prix réel ; « dans 3 jours » = mécanique réelle ; UGC authentiques</td>
+<td>Intégré</td>
+</tr>
+<tr>
+<td>Témoignages</td>
+<td>Authenticité des personnes et transparence</td>
+<td>« Voyages offerts aux participants de l'avant-première » affiché en fin de vidéo</td>
+<td>À ajouter au montage</td>
+</tr>
+<tr>
+<td>Loi Influenceurs <span class="tag t-c">Cours</span></td>
+<td>Mention « Publicité » ou « Collaboration commerciale » dès qu'il y a avantage en nature</td>
+<td>Si les voyageurs de l'avant-première publient eux-mêmes, mention obligatoire en début de contenu</td>
+<td>À cadrer dans leur contrat</td>
+</tr>
+<tr>
+<td>Greenwashing (loi Climat et Résilience) <span class="tag t-c">Cours</span></td>
+<td>Pas d'allégation environnementale absolue</td>
+<td>Aucun argument carbone dans les 3 pubs</td>
+<td>Intégré</td>
+</tr>
+<tr>
+<td>Voyage à forfait (Code du tourisme)</td>
+<td>Information précontractuelle écrite, prix et conditions d'annulation, conditions de franchissement des frontières (<a href="https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/voyages-et-sejours-forfait-les-points-verifier">DGCCRF</a>)</td>
+<td>Mentions en BOFU ; formulaire d'information sur la page de réservation ; organisateur immatriculé (à vérifier : immatriculation de SNCF Connect au registre des opérateurs de voyages)</td>
+<td>Intégré / à vérifier</td>
+</tr>
+<tr>
+<td>RGPD</td>
+<td>Consentement au ciblage publicitaire ; usage du CRM</td>
+<td>Reciblage limité aux utilisateurs ayant accepté les cookies ; CRM sur clients ayant consenti aux communications</td>
+<td>À vérifier avec SNCF</td>
+</tr>
+<tr>
+<td>Droit à l'image</td>
+<td>Autorisation écrite des personnes filmées</td>
+<td>Contrats de cession pour l'avant-première ; autorisations pour les maquettes</td>
+<td>À faire</td>
+</tr>
+<tr>
+<td>Accessibilité</td>
+<td>Compréhension sans le son</td>
+<td>Sous-titres incrustés ; DOOH conçu muet</td>
+<td>Intégré</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="partie-6-planifier-et-diffuser-la-campagne">Partie 6 — Planifier et diffuser la campagne</h2>
+<p><strong>Question de la consigne</strong> : canaux, supports, formats et ciblages ; planning de diffusion ; budget réparti entre création, production, diffusion et pilotage. <strong>Outils du cours</strong> : 5 questions pour choisir un canal, rôle de chaque canal, tableau des ciblages, séquençage (Adidas Nemeziz), écosystème publicitaire et désintermédiation, 3 modèles de pression, 4 phases de campagne, méthode budgétaire. <strong>Lien</strong> : les trois publicités (partie 5) existent ; il faut maintenant les faire voir aux bonnes personnes, dans le bon ordre, avec 250 000 € HT.</p>
+<p><strong>En une phrase</strong> : une campagne concentrée de 12 semaines, du 11 janvier au 4 avril 2027, en pulsation, qui dépense 68 % du budget en espace payant sur six canaux, sans TV.</p>
+<h3 id="6-1-choix-des-canaux-5-questions-du-cours">6.1 Choix des canaux (5 questions du cours)</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Canal</th>
+<th>Audience</th>
+<th>Contexte</th>
+<th>Objectif</th>
+<th>Création</th>
+<th>Coût</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DOOH en gare (Mediatransports)</td>
+<td>~10 M de voyageurs par jour en gare</td>
+<td>Attente, regard levé vers les écrans</td>
+<td>Cognitif</td>
+<td>Le tableau des départs y prend tout son sens</td>
+<td>Le plus cher au contact, mais concentré sur 3 vagues et sur les créneaux où la cible est en gare</td>
+<td><strong>Retenu</strong></td>
+</tr>
+<tr>
+<td>Social ads (Meta, TikTok)</td>
+<td>Les 25-39 ans y passent l'essentiel de leur temps média mobile</td>
+<td>Défilement, son souvent coupé</td>
+<td>Cognitif et affectif</td>
+<td>Vidéo verticale UGC native</td>
+<td>Achat en direct, CPM bas</td>
+<td><strong>Retenu</strong></td>
+</tr>
+<tr>
+<td>Display programmatique</td>
+<td>Sites d'actualité, blogs voyage, sites lifestyle et city-guides</td>
+<td>Lecture, inspiration</td>
+<td>Affectif et conatif (reciblage)</td>
+<td>Bannière animée tableau</td>
+<td>CPM bas, pilotable</td>
+<td><strong>Retenu</strong></td>
+</tr>
+<tr>
+<td>Retail media SNCF Connect</td>
+<td>10 M de visiteurs uniques par mois (<a href="https://www.sncf-connect.com/outils/regie-publicitaire">SNCF Connect</a>)</td>
+<td>En train de chercher un trajet</td>
+<td>Conatif</td>
+<td>Carte native « Pas d'idée ? »</td>
+<td>Données first-party, gaspillage faible</td>
+<td><strong>Retenu</strong></td>
+</tr>
+<tr>
+<td>Retail media distributeurs</td>
+<td>Acheteurs de cadeaux</td>
+<td>En magasin en ligne, avant une fête</td>
+<td>Conatif (cadeau)</td>
+<td>Bannière e-carte</td>
+<td>Limité à la Saint-Valentin</td>
+<td><strong>Retenu</strong></td>
+</tr>
+<tr>
+<td>Search (Google)</td>
+<td>Ceux qui cherchent « week-end surprise », « idée cadeau couple »</td>
+<td>Intention active</td>
+<td>Conatif</td>
+<td>Annonce texte</td>
+<td>Payé au clic</td>
+<td><strong>Retenu</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>Les canaux écartés (TV, cinéma, radio nationale, presse, affichage classique, influence macro, LinkedIn, Snapchat, Twitch, fichiers loués) sont justifiés en 4.8. Cohérent avec la part de voix (1.4) : on ne gagne pas la bataille du volume, on concentre.</p>
+<h3 id="6-2-role-de-chaque-canal">6.2 Rôle de chaque canal</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Canal</th>
+<th>Rôle dans la campagne</th>
+<th>Publicité diffusée</th>
+<th>Application à Destination Mystère</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DOOH en gare</td>
+<td>Installer l'énigme dans le quotidien</td>
+<td>Pub 1 « Les gares »</td>
+<td>Écrans programmés sur les départs du jeudi et du vendredi soir, les retours du dimanche et les heures de pointe (6.3)</td>
+</tr>
+<tr>
+<td>Social ads</td>
+<td>Faire découvrir puis convaincre</td>
+<td>Pub 1 (6 s) puis Pub 2 « Les réseaux sociaux »</td>
+<td>Vidéo UGC poussée aux 25-39 ans, puis reciblage</td>
+</tr>
+<tr>
+<td>Display</td>
+<td>Prolonger la preuve et rappeler l'offre</td>
+<td>Pub 3 + vignette UGC</td>
+<td>Contextuel voyage, reciblage des vues vidéo</td>
+</tr>
+<tr>
+<td>Retail media SNCF Connect</td>
+<td>Convertir au moment de la recherche</td>
+<td>Pub 3 (carte native)</td>
+<td>« Pas d'idée ? Laissez-nous choisir. »</td>
+</tr>
+<tr>
+<td>Retail media distributeurs</td>
+<td>Vendre l'e-carte cadeau</td>
+<td>Pub 3 (version e-carte)</td>
+<td>« Offrez-lui une annonce. », Saint-Valentin</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>Capter l'intention existante</td>
+<td>Annonces texte</td>
+<td>Mots-clés surprise, week-end, cadeau</td>
+</tr>
+<tr>
+<td>Owned (complément)</td>
+<td>Accompagner l'attente et le partage</td>
+<td>Push J-3, emails, comptes SNCF</td>
+<td>Révélation, rappel pièce d'identité, appel au partage UGC</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Complémentarité</strong> : le DOOH crée l'énigme sans pouvoir la mesurer individuellement ; les social ads l'expliquent et créent les audiences de reciblage ; le display et le retail media convertissent ; le Search récupère ceux qui cherchent par eux-mêmes.</p>
+<h3 id="6-3-ciblages">6.3 Ciblages</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Canal</th>
+<th>Logique de ciblage <span class="tag t-c">Cours</span></th>
+<th>Critères retenus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Search</td>
+<td>Intention active</td>
+<td>Mots-clés « week-end surprise », « voyage mystère », « idée week-end », « idée cadeau couple » ; France ; mobile et ordinateur</td>
+</tr>
+<tr>
+<td>Social ads</td>
+<td>Profil et affinité</td>
+<td>25-39 ans, grandes agglomérations, intérêts voyage et sorties ; audiences similaires aux clients SNCF Connect (données CRM consenties)</td>
+</tr>
+<tr>
+<td>Display</td>
+<td>Contexte, audience et lieu</td>
+<td>Sites d'actualité (pendant la lecture), blogs voyage, sites lifestyle et city-guides ; reciblage des vues vidéo et des visiteurs de la page ; ciblage géolocalisé sur les grandes agglomérations desservies (zones à définir avec l'agence média)</td>
+</tr>
+<tr>
+<td>Vidéo (Reels, TikTok)</td>
+<td>Contexte de visionnage</td>
+<td>Placements verticaux plein écran</td>
+</tr>
+<tr>
+<td>DOOH</td>
+<td>Contexte et moment</td>
+<td>Gares des grandes villes ; 3 créneaux (tableau ci-dessous) ; achat programmatique déclenché sur les départs réels (Train Live Triggering)</td>
+</tr>
+<tr>
+<td>Retail media SNCF Connect</td>
+<td>Comportement d'achat (first-party)</td>
+<td>Utilisateurs qui cherchent sans destination précise, clients sans réservation depuis 6 mois, configurations abandonnées</td>
+</tr>
+<tr>
+<td>Retail media distributeurs</td>
+<td>Comportement d'achat</td>
+<td>Acheteurs des rayons coffrets et cadeaux, 3 semaines avant la Saint-Valentin</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Créneaux de diffusion de la Pub 1 en gare</strong> (déduits du mode de vie de la cible ; à vérifier avec l'audience par écran, par jour et par plage horaire fournie par la régie ([CB News)(https://www.cbnews.fr/node/87543)), puis avec les tranches horaires certifiées par l'ACPM après la campagne (<a href="https://fr.themedialeader.com/lacpm-met-en-place-un-indicateur-horaire-pour-les-campagnes-dooh/">The Media Leader</a>)]</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Priorité</th>
+<th>Créneau</th>
+<th>Pourquoi pour notre cible</th>
+<th>Part du budget DOOH</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Jeudi et vendredi, 16 h - 20 h</td>
+<td>Départs en week-end : la cible attend dans le hall, les yeux sur les tableaux. C'est le moment de l'insight : ceux qui partent croisent ceux qui n'ont pas su choisir</td>
+<td>~60 %</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Dimanche, 17 h - 21 h</td>
+<td>Retours de week-end : « c'est déjà fini, et le prochain ? » ; l'envie de repartir naît là</td>
+<td>~15 %</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Lundi au vendredi, 7 h 30 - 9 h 30 et 17 h - 19 h 30, grandes gares</td>
+<td>Trajets domicile-travail des jeunes actifs urbains : gros volume, attention courte (version 6 s)</td>
+<td>~25 %</td>
+</tr>
+<tr>
+<td>Exclu</td>
+<td>21 h - 6 h ; 10 h - 16 h en semaine</td>
+<td>Peu de 25-39 ans ; Camille, en horaires décalés, est d'abord touchée par les social ads</td>
+<td>0 %</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Fenêtres de reciblage</strong> : vidéo UGC vue à 50 % sur 14 jours → display et retail media ; configuration abandonnée sur 7 jours → bannière personnalisée ; exclusion des personnes qui ont déjà réservé. Plafond de répétition : 3 expositions par semaine et par personne sur le display.</p>
+<h3 id="6-4-sequencage-des-messages-cf-adidas-nemeziz">6.4 Séquençage des messages (cf. Adidas Nemeziz)</h3>
+<ol>
+<li><strong>Tout le monde</strong> voit le teaser : DOOH en gare et vidéo 6 s de la Pub 1 « Les gares ».</li>
+<li><strong>A vu au moins 50 % du teaser</strong> → reçoit la vidéo UGC de la Pub 2 « Les réseaux sociaux ».</li>
+<li><strong>A vu 50 % de la vidéo UGC ou visité la page</strong> → reçoit le display de preuve, puis la carte « Pas d'idée ? » sur SNCF Connect.</li>
+<li><strong>A commencé une configuration sans réserver</strong> → reçoit la bannière personnalisée « Votre annonce dans 3 jours », avec ses dates.</li>
+<li><strong>A réservé</strong> → sort des audiences publicitaires ; il entre dans le parcours owned (push J-3, appel au partage).</li>
+<li><strong>Branche cadeau</strong> : recherche « idée cadeau » ou navigation dans les rayons cadeaux → bannière e-carte.</li>
+</ol>
+<p>Chaque étape répond au frein de la précédente, comme Adidas adaptait ses messages à l'intérêt manifesté.</p>
+<h3 id="6-5-ecosysteme">6.5 Écosystème</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Acteur</th>
+<th>Rôle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Annonceur : SNCF Voyageurs</td>
+<td>Brief, budget, validations, données CRM, conditions de l'offre</td>
+</tr>
+<tr>
+<td>Agence créative : notre agence</td>
+<td>Concept, créations, briefs de production, avant-première</td>
+</tr>
+<tr>
+<td>Agence média : l'agence du groupe (Havas Media sur les campagnes récentes, <a href="https://www.cbnews.fr/node/102081">CB News</a>)</td>
+<td>Plan média, négociation, achat DOOH et display, pilotage</td>
+</tr>
+<tr>
+<td>Régies</td>
+<td>Mediatransports (gares), régie SNCF Connect, régies retail media des distributeurs</td>
+</tr>
+<tr>
+<td>Plateformes en désintermédiation <span class="tag t-c">Cours</span></td>
+<td>Meta, TikTok, Google : achat direct en libre-service, pilotage quotidien par l'agence média</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="6-6-planning">6.6 Planning</h3>
+<p><strong>Période : du 11 janvier au 4 avril 2027.</strong> Pourquoi ?</p>
+<ul>
+<li><strong>Janvier</strong> : l'envie de repartir après les fêtes, avant que les week-ends de printemps ne soient réservés.</li>
+<li><strong>Saint-Valentin (14 février 2027)</strong> : pic de la cible cadeau et de l'e-carte.</li>
+<li><strong>Printemps</strong> : les week-ends de Pâques (28 mars 2027) et les ponts de mai (Ascension le 6 mai 2027) se réservent pendant la campagne.</li>
+<li><strong>Hors Noël</strong> : on évite la période où les grands annonceurs du voyage saturent l'espace.</li>
+</ul>
+<p><strong>Modèle de pression : la pulsation <span class="tag t-c">Cours</span>.</strong> Un fond continu (Search, retail media SNCF Connect, reciblage) et trois pics : le lancement (S1-S3), la Saint-Valentin (S5-S6) et les réservations de printemps (S10-S11). Pourquoi ? Un budget limité ne tient pas la continuité forte, et les vagues seules laisseraient la conversion sans fond.</p>
+<p><strong>4 phases <span class="tag t-c">Cours</span></strong> : teasing (S1-S2), lancement (S3-S4), conviction (S5-S9), conversion et relance (S10-S12).</p>
+<p><strong>Rétroplanning sur 12 semaines</strong></p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Semaine</th>
+<th>Dates 2027</th>
+<th>Phase</th>
+<th>Publicité diffusée</th>
+<th>Canaux</th>
+<th>Objectif</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1</td>
+<td>11-17 janv.</td>
+<td>Teasing</td>
+<td>Pub 1 « Les gares »</td>
+<td>DOOH (vague 1), social 6 s</td>
+<td>Cognitif : l'énigme ; avant-première en cours</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>18-24 janv.</td>
+<td>Teasing</td>
+<td>Pub 1</td>
+<td>DOOH, social 6 s, Search</td>
+<td>Cognitif ; tournage des UGC de l'avant-première</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>25-31 janv.</td>
+<td>Lancement</td>
+<td>Pub 1 + Pub 2</td>
+<td>DOOH, social, Search</td>
+<td>Cognitif puis affectif : premières vraies révélations</td>
+</tr>
+<tr>
+<td>S4</td>
+<td>1-7 févr.</td>
+<td>Lancement</td>
+<td>Pub 2</td>
+<td>Social, display, retail SNCF Connect</td>
+<td>Affectif</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>8-14 févr.</td>
+<td>Conviction (pic Saint-Valentin)</td>
+<td>Pub 2 + Pub 3 e-carte</td>
+<td>Social, retail distributeurs, Search cadeau, DOOH (vague 2)</td>
+<td>Affectif et conatif cadeau</td>
+</tr>
+<tr>
+<td>S6</td>
+<td>15-21 févr.</td>
+<td>Conviction</td>
+<td>Pub 2</td>
+<td>Social, display</td>
+<td>Affectif</td>
+</tr>
+<tr>
+<td>S7</td>
+<td>22-28 févr.</td>
+<td>Conviction</td>
+<td>Pub 2 + Pub 3</td>
+<td>Social, display, retail SNCF Connect</td>
+<td>Affectif puis conatif</td>
+</tr>
+<tr>
+<td>S8</td>
+<td>1-7 mars</td>
+<td>Conviction</td>
+<td>Pub 2 (nouvelles UGC)</td>
+<td>Social, display</td>
+<td>Affectif : renouveler la preuve</td>
+</tr>
+<tr>
+<td>S9</td>
+<td>8-14 mars</td>
+<td>Conviction</td>
+<td>Pub 2 + Pub 3</td>
+<td>Social, retail SNCF Connect</td>
+<td>Conatif</td>
+</tr>
+<tr>
+<td>S10</td>
+<td>15-21 mars</td>
+<td>Conversion (pic printemps)</td>
+<td>Pub 1 rappel + Pub 3</td>
+<td>DOOH (vague 3), retail SNCF Connect, reciblage, Search</td>
+<td>Conatif : week-ends de Pâques et ponts de mai</td>
+</tr>
+<tr>
+<td>S11</td>
+<td>22-28 mars</td>
+<td>Conversion</td>
+<td>Pub 3</td>
+<td>Retail SNCF Connect, reciblage, Search</td>
+<td>Conatif</td>
+</tr>
+<tr>
+<td>S12</td>
+<td>29 mars-4 avril</td>
+<td>Relance</td>
+<td>Pub 3 + avis réels</td>
+<td>Reciblage, retail SNCF Connect</td>
+<td>Conatif, preuve sociale ; post-test</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="6-7-budget-250-000-ht">6.7 Budget : 250 000 € HT</h3>
+<p>Méthode du cours : partir des objectifs, chiffrer, répartir, prévoir une marge et arbitrer.</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Poste <span class="tag t-g">Consigne</span></th>
+<th>Montant HT</th>
+<th>Part</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Création</td>
+<td>20 000 €</td>
+<td>8 %</td>
+<td>Concept, direction artistique, rédaction, déclinaisons</td>
+</tr>
+<tr>
+<td>Production</td>
+<td>30 300 €</td>
+<td>12 %</td>
+<td>Avant-première (100 personnes en 52 séjours d'une nuit : 30 couples, 6 groupes de 4, 16 solos ; ~12 800 € au coût interne, sur la base d'environ 160 € par personne seule, 250 € par couple et 450 € par groupe de 4) ; montage UGC, animations DOOH et HTML5, cessions de droits</td>
+</tr>
+<tr>
+<td>Diffusion</td>
+<td>170 000 €</td>
+<td>68 %</td>
+<td>Détail ci-dessous</td>
+</tr>
+<tr>
+<td>Pilotage</td>
+<td>15 000 €</td>
+<td>6 %</td>
+<td>Post-test de notoriété et d'agrément (panel), outils de mesure et de suivi, reporting, conseil ARPP</td>
+</tr>
+<tr>
+<td>Marge de sécurité</td>
+<td>14 700 €</td>
+<td>6 %</td>
+<td>Réallocation selon les résultats (7.3)</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>250 000 €</strong></td>
+<td><strong>100 %</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Diffusion par canal et par phase</strong></p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Canal</th>
+<th>Teasing S1-S2</th>
+<th>Lancement S3-S4</th>
+<th>Conviction S5-S9</th>
+<th>Conversion S10-S12</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DOOH en gare</td>
+<td>15 000 €</td>
+<td>7 000 €</td>
+<td>8 000 €</td>
+<td>14 000 €</td>
+<td>44 000 €</td>
+</tr>
+<tr>
+<td>Social ads</td>
+<td>8 000 €</td>
+<td>15 000 €</td>
+<td>25 000 €</td>
+<td>5 000 €</td>
+<td>53 000 €</td>
+</tr>
+<tr>
+<td>Display</td>
+<td>—</td>
+<td>5 000 €</td>
+<td>10 000 €</td>
+<td>5 000 €</td>
+<td>20 000 €</td>
+</tr>
+<tr>
+<td>Retail media SNCF Connect</td>
+<td>—</td>
+<td>5 000 €</td>
+<td>8 000 €</td>
+<td>15 000 €</td>
+<td>28 000 €</td>
+</tr>
+<tr>
+<td>Retail media distributeurs</td>
+<td>—</td>
+<td>—</td>
+<td>10 000 €</td>
+<td>—</td>
+<td>10 000 €</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>—</td>
+<td>5 000 €</td>
+<td>2 000 €</td>
+<td>8 000 €</td>
+<td>15 000 €</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>23 000 €</strong></td>
+<td><strong>37 000 €</strong></td>
+<td><strong>63 000 €</strong></td>
+<td><strong>47 000 €</strong></td>
+<td><strong>170 000 €</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Répartition du DOOH</strong> (estimation) : 44 000 € en trois vagues : vague 1 (S1-S3) 22 000 €, vague 2 (Saint-Valentin, S5) 8 000 €, vague 3 (printemps, S10) 14 000 €, avec l'accent sur le vendredi soir et le dimanche retour (créneaux en 6.3). N'acheter que ces créneaux évite de payer des contacts inutiles ; hors des créneaux en gare, la vidéo 6 s prend le relais sur mobile, et le retail media SNCF Connect convertit en S10-S12 ceux qui ont vu le tableau.</p>
+<p><strong>Coûts unitaires de référence</strong> (ordres de grandeur du marché, à confirmer auprès des régies et de l'agence média)</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Levier</th>
+<th>Coût unitaire retenu</th>
+<th>Volume indicatif</th>
+<th>Fiabilité</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Social ads (Meta, TikTok)</td>
+<td>CPM ~6 €</td>
+<td>~8,8 M d'impressions</td>
+<td>Moyenne</td>
+</tr>
+<tr>
+<td>Display programmatique</td>
+<td>CPM ~4 €</td>
+<td>~5 M d'impressions</td>
+<td>Moyenne</td>
+</tr>
+<tr>
+<td>Retail media SNCF Connect</td>
+<td>CPM ~15 € (données first-party)</td>
+<td>~1,9 M d'impressions</td>
+<td>Faible : tarif à demander à la régie</td>
+</tr>
+<tr>
+<td>DOOH en gare</td>
+<td>Achat programmatique par créneau horaire (coût au contact plus élevé, mais sans contacts perdus)</td>
+<td>3 vagues de 1 à 2 semaines, 3 créneaux</td>
+<td>Faible : devis Mediatransports nécessaire</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>CPC ~0,80 €</td>
+<td>~19 000 clics</td>
+<td>Moyenne</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Arbitrages</strong> : on renonce à la TV et au cinéma (coût), à l'influence rémunérée (crédibilité), à l'audio (peu montrable, budget dilué) et à une production cinéma (les UGC suffisent et sont plus crédibles). Le DOOH garde 26 % de la diffusion malgré son coût, parce que la gare est le lieu même du concept ; il est concentré sur les créneaux où la cible attend son train.</p>
+<h2 id="partie-7-mesurer-et-optimiser-la-campagne">Partie 7 — Mesurer et optimiser la campagne</h2>
+<p><strong>Question de la consigne</strong> : KPI associés aux objectifs ; méthode d'évaluation ; pistes d'optimisation si les résultats sont insuffisants. <strong>Outils du cours</strong> : KPI par familles (notoriété, intérêt, action), « partir des objectifs », comparer aux objectifs et interpréter les limites, A/B testing facilité par l'IA générative. <strong>Lien</strong> : l'objectif SMART (4.1) fixe ce qu'on mesure ; le budget (6.7) réserve 15 000 € au pilotage et 14 700 € de marge pour corriger.</p>
+<h3 id="7-1-kpi">7.1 KPI</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Objectif</th>
+<th>Étape</th>
+<th>KPI</th>
+<th>Valeur cible</th>
+<th>Outil de mesure</th>
+<th>Limite de l'indicateur</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cognitif (condition)</td>
+<td>TOFU</td>
+<td>Notoriété assistée du service chez les 25-39 ans</td>
+<td>25 %</td>
+<td>Post-test sur panel, exposés vs non exposés</td>
+<td>Déclaratif ; le DOOH n'est pas traçable individuellement</td>
+</tr>
+<tr>
+<td>Cognitif</td>
+<td>TOFU</td>
+<td>Couverture des social ads sur la cible</td>
+<td>4 M de personnes</td>
+<td>Meta et TikTok Ads Manager</td>
+<td>Une personne peut être comptée sur deux plateformes</td>
+</tr>
+<tr>
+<td><strong>Affectif (priorité)</strong></td>
+<td>MOFU</td>
+<td><strong>Agrément de l'offre</strong></td>
+<td><strong>60 %</strong></td>
+<td>Post-test</td>
+<td>Déclaratif</td>
+</tr>
+<tr>
+<td><strong>Affectif (priorité)</strong></td>
+<td>MOFU</td>
+<td><strong>Intention de réserver dans les 6 mois</strong></td>
+<td><strong>20 %</strong></td>
+<td>Post-test</td>
+<td>L'intention ne garantit pas l'achat</td>
+</tr>
+<tr>
+<td>Affectif</td>
+<td>MOFU</td>
+<td>Vidéo UGC vue à 50 %</td>
+<td>25 % des impressions</td>
+<td>Plateformes sociales</td>
+<td>Une vue n'est pas une conviction</td>
+</tr>
+<tr>
+<td>Affectif</td>
+<td>MOFU</td>
+<td>Tonalité des commentaires et mentions</td>
+<td>70 % positifs ou neutres</td>
+<td>Social listening (Talkwalker ou Visibrain)</td>
+<td>Codage automatique imparfait</td>
+</tr>
+<tr>
+<td>Conatif (finalité)</td>
+<td>BOFU</td>
+<td>Premières réservations (e-cartes comprises)</td>
+<td>1 000</td>
+<td>SNCF Connect (données first-party)</td>
+<td>Attribution entre canaux difficile</td>
+</tr>
+<tr>
+<td>Conatif</td>
+<td>BOFU</td>
+<td>Coût par réservation (diffusion / réservations)</td>
+<td>≤ 170 €</td>
+<td>Calcul agence média</td>
+<td>Ignore la valeur des réservations futures</td>
+</tr>
+<tr>
+<td>Conatif</td>
+<td>BOFU</td>
+<td>Taux de passage de la configuration à la réservation</td>
+<td>15 %</td>
+<td>Analytics SNCF Connect</td>
+<td>Dépend de la qualité du tunnel, pas seulement de la pub</td>
+</tr>
+<tr>
+<td>Post-achat</td>
+<td>Partage</td>
+<td>Note moyenne des voyageurs ; vidéos de révélation partagées</td>
+<td>≥ 4/5 ; 200 vidéos</td>
+<td>Avis vérifiés ; comptage des partages autorisés</td>
+<td>Les déçus répondent moins</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="7-2-evaluation">7.2 Évaluation</h3>
+<ul>
+<li><strong>Comparer aux objectifs</strong> <span class="tag t-c">Cours</span> : chaque semaine pour les KPI des plateformes ; post-test à la fin (S12) pour la notoriété, l'agrément et l'intention.</li>
+<li><strong>Mesurer l'effet réel</strong> : groupe exposé vs groupe témoin. En social ads, études d'impact de marque et de conversion proposées par les plateformes ; en DOOH, comparaison des recherches et des configurations entre villes avec et sans écrans.</li>
+<li><strong>Limites</strong> : attribution (une réservation suit souvent plusieurs contacts), biais déclaratifs des post-tests, saisonnalité (Saint-Valentin et Pâques gonflent naturellement la demande), effet nouveauté.</li>
+</ul>
+<h3 id="7-3-optimisation">7.3 Optimisation</h3>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Seuil et moment</th>
+<th>Décision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>La vidéo UGC n'accroche pas</td>
+<td>Moins de 20 % de vues à 50 % en S4</td>
+<td>Changer les 2 premières secondes : tester 3 débuts différents (A/B testing, variantes générées plus vite avec l'IA générative <span class="tag t-c">Cours</span>)</td>
+</tr>
+<tr>
+<td>La conversion coûte trop cher</td>
+<td>Coût par réservation supérieur à 220 € en S7</td>
+<td>Déplacer 10 000 € du display vers le retail media SNCF Connect et le reciblage des configurations abandonnées</td>
+</tr>
+<tr>
+<td>L'agrément reste faible</td>
+<td>Moins de 50 % au point d'étape S6 (mini-sondage)</td>
+<td>Renforcer la démonstration et les garanties (lieux écartés, prix tout compris) dans la vidéo</td>
+</tr>
+<tr>
+<td>L'e-carte se vend peu</td>
+<td>Moins de 100 e-cartes à J-7 de la Saint-Valentin</td>
+<td>Basculer le budget distributeurs vers le Search cadeau et le social</td>
+</tr>
+<tr>
+<td>Fatigue des audiences</td>
+<td>Taux de clic en baisse de 30 % sur 2 semaines</td>
+<td>Injecter de nouvelles vidéos UGC (S8) ; plafonner la répétition</td>
+</tr>
+<tr>
+<td>Tout dépasse les objectifs</td>
+<td>Coût par réservation inférieur à 120 € en S9</td>
+<td>Libérer la marge de 14 700 € sur la vague printemps</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Reciblage par température</strong> <span class="tag t-c">Cours</span> : froide → teaser ; tiède → vidéo UGC et preuve ; chaude → bannière personnalisée. On ne montre jamais la bannière de prix à quelqu'un qui n'a pas vu la preuve.</p>
+<h2 id="annexe-ou-le-cours-est-applique">Annexe — Où le cours est appliqué</h2>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>Critère de la grille</th>
+<th>Notion du cours</th>
+<th>Où elle est appliquée</th>
+<th>Ce qu'elle apporte au cas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Analyse de la marque (1 pt)</td>
+<td>Diagnostic interne, grille d'analyse d'une campagne, part de voix</td>
+<td>1.2, 1.3, 1.4</td>
+<td>Montre que SNCF dit toujours où et combien ; justifie la concentration</td>
+</tr>
+<tr>
+<td>2. Cible et insights (3 pts)</td>
+<td>Cœur de cible, persona en 4 blocs, 5 pourquoi, contradictions, verbatims, test de l'insight, insight créateur d'usage</td>
+<td>2.1 à 2.4</td>
+<td>Insight fondé sur des données (76 %) et des verbatims ; rituel de la révélation</td>
+</tr>
+<tr>
+<td>3. Stratégie publicitaire et créative (3 pts)</td>
+<td>4 questions, Copy Strategy Ariel, promesse émotionnelle, 6 preuves, 5 critères du ton</td>
+<td>4.1 à 4.4</td>
+<td>Objectif prioritaire affectif ; preuve sociale UGC ; ni prix ni vitesse</td>
+</tr>
+<tr>
+<td>3. Stratégie publicitaire et créative (3 pts)</td>
+<td>Cadre légal : publicité trompeuse, greenwashing, loi Influenceurs</td>
+<td>5.5</td>
+<td>Une campagne défendable devant un jury d'annonceurs</td>
+</tr>
+<tr>
+<td>4. Concept et originalité (2 pts)</td>
+<td>Convention → Disruption → Vision, territoire (grille Oasis)</td>
+<td>4.5 à 4.7</td>
+<td>Rupture avec les habitudes SNCF en gardant ses codes, sans autodérision</td>
+</tr>
+<tr>
+<td>4. Concept et originalité (2 pts)</td>
+<td>Territoire créatif (grille Oasis)</td>
+<td>5.4</td>
+<td>Trois pubs reconnaissables comme une seule campagne SNCF</td>
+</tr>
+<tr>
+<td>5. Parcours et funnel (3 pts)</td>
+<td>Température d'audience, funnel Respire, 3 niveaux d'objectifs, parcours Nike</td>
+<td>3.1 à 3.3</td>
+<td>Un frein levé par étape ; pondération 30 / 45 / 25 ; payant d'abord</td>
+</tr>
+<tr>
+<td>5. Parcours et funnel (3 pts)</td>
+<td>Cognitif, affectif, conatif</td>
+<td>5.1</td>
+<td>Chaque pub sert un niveau d'objectif, l'affectif au centre</td>
+</tr>
+<tr>
+<td>6 et 7. Publicités, diffusion (4 + 3 pts)</td>
+<td>5 questions pour choisir un canal, rôle de chaque canal</td>
+<td>4.8, 6.1, 6.2</td>
+<td>Supports payants choisis et canaux écartés justifiés</td>
+</tr>
+<tr>
+<td>6. Réalisation des trois publicités (4 pts)</td>
+<td>Techniques créatives (storytelling, consommateur héros / GMF, AIDA, démonstration, émotion)</td>
+<td>5.1, 5.2</td>
+<td>Une technique adaptée à chaque étape du funnel</td>
+</tr>
+<tr>
+<td>6. Réalisation des trois publicités (4 pts)</td>
+<td>7 leviers de persuasion</td>
+<td>5.1</td>
+<td>Curiosité et unité, preuve sociale, sympathie, engagement ; rareté écartée faute de limite réelle</td>
+</tr>
+<tr>
+<td>6. Réalisation des trois publicités (4 pts)</td>
+<td>Formats et canaux, 5 questions pour choisir un canal</td>
+<td>5.1, 5.3</td>
+<td>Spécifications réalistes et réalisables par l'équipe</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="sources">Sources</h2>
+<p>Documents du projet : <em>CHALLENGE AGENCE.pdf</em> (consigne et grille) ; <em>Cours_Strategies_publicitaires_Jour1.pdf</em> (référentiel). Pages web consultées (liens dans le texte) : CB News, La Réclame, J'ai un pote dans la com, The Media Leader, TourMaG, L'Écho touristique, DéplacementsPros, SNCF Voyageurs (destinations et Europe), SNCF Connect (régie), Gares &amp; Connexions, DGCCRF, YouGov, Ipsos, Euronews, Hospitality Net, Trustpilot, ÀmonAvis, LADbible, Clubic, Journal du Geek, Économie Matin, Paris Match, La Poste.</p>
+<p>Points à confirmer avec SNCF : charte graphique et sonore SNCF (jingle, palette), montant exact des investissements publicitaires du secteur (pige Kantar), conditions réelles du service (garanties en cas de perturbation), distributeurs et régies retail media pour l'e-carte cadeau.</p></main></div>
+<footer>Mis à jour le 21/11/2026 23:33 · texte intégral du doc de travail, sources liées dans le texte.</footer>
+<script>{
+const villes=["LYON","BORDEAUX","NANTES","COLMAR","ANNECY","LA ROCHELLE","? ? ? ? ? ?"];
+const el=document.getElementById("d2");let i=0;
+if(!matchMedia("(prefers-reduced-motion: reduce)").matches){
+  const t=setInterval(()=>{el.textContent=villes[i++];if(i>=villes.length)clearInterval(t);},260);
+}
+const links=[...document.querySelectorAll("nav.toc a")];
+const heads=links.map(a=>document.getElementById(decodeURIComponent(a.hash.slice(1)))).filter(Boolean);
+const io=new IntersectionObserver(es=>{for(const e of es)if(e.isIntersecting){links.forEach(a=>a.classList.toggle("on",a.hash==="#"+e.target.id));}},{rootMargin:"0px 0px -70% 0px"});
+heads.forEach(h=>io.observe(h));
+}</script>
+</body></html>

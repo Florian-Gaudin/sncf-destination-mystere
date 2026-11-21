@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SNCF Destination Mystère</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0a1426;--panel:#13264a;--line:#24406e;--text:#f2f5fa;--muted:#a9b8cd;--amber:#f6b031}
+*{box-sizing:border-box}
+body{margin:0;background:var(--navy);color:var(--text);font:16px/1.5 Inter,system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:960px;margin:0 auto;padding:48px 16px 64px}
+.kicker{color:var(--amber);font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:13px;margin:0 0 8px}
+h1{font-size:clamp(32px,6vw,52px);line-height:1.05;margin:0 0 12px;font-weight:800}
+h1 span{color:var(--amber)}
+.lead{color:var(--muted);max-width:60ch;margin:0 0 40px}
+h2{font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:40px 0 14px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+a.card{display:flex;flex-direction:column;gap:6px;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:12px;color:inherit;text-decoration:none;transition:border-color .15s,transform .15s}
+a.card:hover,a.card:focus-visible{border-color:var(--amber);transform:translateY(-2px);outline:none}
+.tag{align-self:flex-start;font-size:12px;font-weight:600;color:var(--navy);background:var(--amber);border-radius:999px;padding:2px 10px}
+.card h3{margin:6px 0 0;font-size:18px;line-height:1.25}
+.card p{margin:0;color:var(--muted);font-size:14px}
+footer{margin-top:56px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="kicker">Projet CESI</p>
+  <h1>SNCF Destination <span>Mystère</span></h1>
+  <p class="lead">Recommandation de campagne et créations publicitaires : « Vous choisissez quand. On s'occupe du où. »</p>
+
+  <h2>Documents</h2>
+  <div class="grid">
+    <a class="card" href="SNCF%20Destination%20Myst%C3%A8re%20%E2%80%94%20Recommandation%20de%20campagne%20(version%20%C3%A0%20partager).html">
+      <span class="tag">Document</span>
+      <h3>Recommandation de campagne</h3>
+      <p>Le dossier complet : analyse, cibles, stratégie créative, médias, budget et KPI.</p>
+    </a>
+    <a class="card" href="SNCF_Destination_Mystere_recommandation_ecran_de_garev2.html">
+      <span class="tag">Présentation</span>
+      <h3>Recommandation, format écran de gare</h3>
+      <p>La présentation en diaporama plein écran. Naviguez avec les flèches du clavier.</p>
+    </a>
+  </div>
+
+  <h2>Créations</h2>
+  <div class="grid">
+    <a class="card" href="video-pub1-les-gares.html">
+      <span class="tag">Vidéo · 15 s</span>
+      <h3>Pub 1 « Les gares »</h3>
+      <p>Spot DOOH muet présenté en situation dans une gare (16:9).</p>
+    </a>
+    <a class="card" href="video-pub2-reseaux-sociaux.html">
+      <span class="tag">Vidéo · 23 s</span>
+      <h3>Pub 2 « Les réseaux sociaux »</h3>
+      <p>Vidéo verticale UGC pour les social ads : de vrais voyageurs racontent.</p>
+    </a>
+    <a class="card" href="Pub3_bannieres_SNCF_Destination_Mystere.html">
+      <span class="tag">Display</span>
+      <h3>Pub 3 « Mystère sur le où »</h3>
+      <p>Les bannières display animées de la campagne.</p>
+    </a>
+  </div>
+
+  <footer>SNCF Destination Mystère, recommandation de campagne réalisée dans le cadre du CESI.</footer>
+</main>
+</body>
+</html>

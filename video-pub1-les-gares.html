@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pub 1 « Les gares »</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0a1426;--panel:#13264a;--line:#24406e;--text:#f2f5fa;--muted:#a9b8cd;--amber:#f6b031}
+*{box-sizing:border-box}
+body{margin:0;background:var(--navy);color:var(--text);font:16px/1.5 Inter,system-ui,sans-serif;min-height:100vh}
+nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;max-width:1200px;margin:0 auto;padding:16px}
+nav a{color:var(--text);text-decoration:none;font-weight:600;font-size:14px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--panel)}
+nav a:hover,nav a:focus-visible{border-color:var(--amber);color:var(--amber);outline:none}
+main{max-width:1200px;margin:0 auto;padding:8px 16px 48px}
+.kicker{color:var(--amber);font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:13px;margin:0 0 4px}
+h1{margin:0 0 6px;font-size:clamp(26px,4vw,38px);line-height:1.1}
+p.desc{color:var(--muted);margin:0 0 20px;max-width:70ch}
+.player{display:flex;justify-content:center;background:#000;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+video{display:block;max-width:100%;max-height:78vh;width:auto;height:auto}
+</style>
+</head>
+<body>
+<nav aria-label="Navigation">
+  <a href="index.html">← Retour à l'index</a>
+  <a href="video-pub2-reseaux-sociaux.html">Pub 2 « Les réseaux sociaux » →</a>
+</nav>
+<main>
+  <p class="kicker">Pub 1 · TOFU · DOOH en gare</p>
+  <h1>Pub 1 « Les gares »</h1>
+  <p class="desc">Spot de 15 secondes, muet, diffusé sur les écrans des gares. Maquette en situation, format 16:9.</p>
+  <div class="player">
+    <video src="Pub1_Maquette_in_situ_gare_16-9_15s_v2.mp4" controls playsinline preload="metadata"></video>
+  </div>
+</main>
+</body>
+</html>
